@@ -1,23 +1,24 @@
-@extends('layouts.app')
+@extends('layouts.appDashboard')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <!-- Card Header -->
+            <div class="card-header text-white text-center">
+                {{ __('Dashboard') }}
+            </div>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    {{ __('You are logged in!') }}
+            <!-- Card Body -->
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h1 class="text-3xl font-weight-bold text-dark mb-3">
+                        Hi, Selamat Datang {{ auth()->user()->name }}
+                    </h1>
+                    <p class="text-muted">
+                        Saat ini Anda berada di halaman Admin LocalFood.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
