@@ -43,16 +43,16 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-info">
+                                    <a href="{{ route('show.menu', $m->id) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-eye"></i> Lihat
                                     </a>
-                                    <a href="#" class="btn btn-sm btn-warning">
+                                    <a href="{{ route('edit.menu', $m->id) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="#" method="POST" class="d-inline">
+                                    <form action="{{ route('destroy.menu', $m->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus menu ini?')">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </form>

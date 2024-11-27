@@ -27,6 +27,7 @@ Route::get('/users', [App\Http\Controllers\Users\UsersController::class, 'index'
 Route::get('/menu', [MenuController::class, 'index'])->name('index.menu');
 Route::get('/menu/create', [MenuController::class, 'create'])->name('create.menu');
 Route::post('/menu/store', [MenuController::class, 'store'])->name('store.menu');
+Route::get('/menu/{id}', [MenuController::class, 'show'])->name('show.menu');
 Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('edit.menu');
 Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('update.menu');
 Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('destroy.menu');

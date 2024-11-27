@@ -75,7 +75,11 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        //
+        // Ambil data menu berdasarkan ID
+    $menu = Menu::findOrFail($id);
+
+    // Tampilkan detail menu
+    return view('menu.show', compact('menu'));
     }
 
     /**
@@ -86,7 +90,11 @@ class MenuController extends Controller
      */
     public function edit($id)
     {
-        //
+        // Ambil data menu berdasarkan ID
+    $menu = Menu::findOrFail($id);
+
+    // Tampilkan form edit dengan data menu
+    return view('menu.edit', compact('menu'));
     }
 
     /**
@@ -98,7 +106,41 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'stok' => 'required|integer|min:0',
+            'status' => 'required|boolean',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'deskripsi' => 'nullable|string',
+        ]);
+    
+        // Ambil data menu berdasarkan ID
+        $menu = Menu::findOrFail($id);
+    
+        // Proses upload foto baru jika ada
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/menu'), $fileName);
+            $filePath = 'uploads/menu/' . $fileName;
+    
+            // Hapus foto lama jika ada
+            if ($menu->foto && file_exists(public_path($menu->foto))) {
+                unlink(public_path($menu->foto));
+            }
+    
+            $menu->foto = $filePath; // Simpan path foto baru
+        }
+    
+        // Update data menu
+        $menu->update([
+            'name' => $request->name,
+            'stok' => $request->stok,
+            'status' => $request->status,
+            'deskripsi' => $request->deskripsi,
+        ]);
+    
+        return redirect()->route('index.menu')->with('success', 'Menu berhasil diperbarui!');
     }
 
     /**
@@ -109,6 +151,17 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
-        //
+    // Ambil data menu berdasarkan ID
+    $menu = Menu::findOrFail($id);
+
+    // Hapus foto dari folder jika ada
+    if ($menu->foto && file_exists(public_path($menu->foto))) {
+        unlink(public_path($menu->foto));
+    }
+
+    // Hapus data menu
+    $menu->delete();
+
+    return redirect()->route('index.menu')->with('success', 'Menu berhasil dihapus!');
     }
 }
