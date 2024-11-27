@@ -83,7 +83,10 @@
                             <a class="nav-link text-dark font-semibold" href="/home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark font-semibold" href="/users">Users</a>
+                            <a class="nav-link text-dark font-semibold" href="{{ route('users') }}">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark font-semibold" href="{{ route('index.menu') }}">Menu</a>
                         </li>
                     </ul>
 
