@@ -82,6 +82,13 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // Ambil data user berdasarkan ID
+        $user = User::findOrFail($id);
+
+        // Hapus user
+        $user->delete();
+
+        // Redirect ke halaman daftar users dengan pesan sukses
+        return redirect()->route('users')->with('success', 'User berhasil dihapus!');
     }
 }

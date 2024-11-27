@@ -23,6 +23,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/users', [App\Http\Controllers\Users\UsersController::class, 'index'])->name('users');
+Route::delete('/users/{id}', [App\Http\Controllers\Users\UsersController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/menu', [MenuController::class, 'index'])->name('index.menu');
 Route::get('/menu/create', [MenuController::class, 'create'])->name('create.menu');
