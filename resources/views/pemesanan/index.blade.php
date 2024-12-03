@@ -95,8 +95,8 @@
 
             <!-- Login, Register, dan Menu di kanan -->
             <div class="d-flex align-items-center">
-                <a href="#" class="btn btn-outline-light me-2">Log in</a>
-                <a href="#" class="btn btn-outline-light me-3">Register</a>
+                {{-- <a href="#" class="btn btn-outline-light me-2">Log in</a>
+                <a href="#" class="btn btn-outline-light me-3">Register</a> --}}
                 <a href="#" class="menu-button" id="menuIcon">Orders</a> <!-- Tombol Orders -->
             </div>
         </div>
@@ -141,43 +141,20 @@
     <!-- Section Cards -->
     <div class="container mt-5">
         <div class="row row-cols-1 row-cols-md-3 g-4">
-            <!-- Card 1 -->
+            @foreach($menus as $menu)
             <div class="col">
                 <div class="card h-100">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Makanan 1">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
                     <div class="card-body">
-                        <h5 class="card-title">Makanan 1</h5>
-                        <p class="card-text">Deskripsi singkat makanan 1 yang menggugah selera.</p>
-                        <input type="number" class="form-control mb-2" placeholder="Jumlah Pesanan" min="1">
+                        <h5 class="card-title">{{ $menu->name }}</h5>
+                        <p class="card-text">{{ $menu->deskripsi }}</p>
+                        <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
+                        <input type="number" class="form-control mb-2" placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}">
                         <button class="btn btn-primary w-100">Pesan</button>
                     </div>
                 </div>
             </div>
-            <!-- Card 2 -->
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Makanan 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Makanan 2</h5>
-                        <p class="card-text">Deskripsi singkat makanan 2 yang menggugah selera.</p>
-                        <input type="number" class="form-control mb-2" placeholder="Jumlah Pesanan" min="1">
-                        <button class="btn btn-primary w-100">Pesan</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Makanan 3">
-                    <div class="card-body">
-                        <h5 class="card-title">Makanan 3</h5>
-                        <p class="card-text">Deskripsi singkat makanan 3 yang menggugah selera.</p>
-                        <input type="number" class="form-control mb-2" placeholder="Jumlah Pesanan" min="1">
-                        <button class="btn btn-primary w-100">Pesan</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Tambahkan lebih banyak kartu di sini jika perlu -->
+            @endforeach
         </div>
     </div>
 

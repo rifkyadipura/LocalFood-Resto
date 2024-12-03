@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\Pemesanan\PemesananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +16,7 @@ use App\Http\Controllers\Menu\MenuController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PemesananController::class, 'index'])->name('index.pemesanan');
 
 Auth::routes();
 
