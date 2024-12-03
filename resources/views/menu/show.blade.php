@@ -28,6 +28,10 @@
                                 <td>{{ $menu->name }}</td>
                             </tr>
                             <tr>
+                                <th>Harga</th>
+                                <td>Rp {{ number_format($menu->harga, 2, ',', '.') }}</td>
+                            </tr>
+                            <tr>
                                 <th>Stok</th>
                                 <td>{{ $menu->stok }}</td>
                             </tr>

@@ -19,6 +19,7 @@ class Menu extends Model
         'status',
         'foto',
         'deskripsi',
+        'harga',
     ];
 
     // Tipe data kolom tertentu (opsional)

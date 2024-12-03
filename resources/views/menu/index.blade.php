@@ -24,6 +24,7 @@
                         <tr>
                             <th scope="col">No</th>
                             <th scope="col">Nama</th>
+                            <th scope="col">Harga</th>
                             <th scope="col">Stok</th>
                             <th scope="col">Status</th>
                             <th scope="col" class="text-center">Aksi</th>
@@ -34,6 +35,7 @@
                             <tr>
                                 <th scope="row">{{ $loop->iteration }}</th>
                                 <td>{{ $m->name }}</td>
+                                <td>Rp {{ number_format($m->harga, 2, ',', '.') }}</td>
                                 <td>{{ $m->stok }}</td>
                                 <td>
                                     @if ($m->status == 1)

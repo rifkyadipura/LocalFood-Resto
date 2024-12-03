@@ -20,6 +20,7 @@ class CreateMenuTable extends Migration
             $table->boolean('status')->default(true); // Status menu (true = tersedia, false = tidak tersedia)
             $table->string('foto')->nullable(); // Foto menu (path file gambar)
             $table->text('deskripsi')->nullable(); // Deskripsi menu
+            $table->decimal('harga', 10, 2)->default(0); // Harga menu (2 desimal untuk representasi uang)
             $table->timestamps(); // Kolom created_at dan updated_at
         });
     }

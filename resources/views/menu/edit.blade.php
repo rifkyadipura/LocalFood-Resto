@@ -28,6 +28,10 @@
                     <input type="text" name="name" id="name" class="form-control" value="{{ $menu->name }}" required>
                 </div>
                 <div class="mb-3">
+                    <label for="harga" class="form-label">Harga</label>
+                    <input type="number" name="harga" id="harga" class="form-control" value="{{ intval($menu->harga) }}" min="0" required>
+                </div>
+                <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>
                     <input type="number" name="stok" id="stok" class="form-control" value="{{ $menu->stok }}" required>
                 </div>
