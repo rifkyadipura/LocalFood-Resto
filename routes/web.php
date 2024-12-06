@@ -34,6 +34,7 @@ Route::put('/users/update/{id}', [UsersController::class, 'update'])->name('user
 Route::delete('/users/delete/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/menu', [MenuController::class, 'index'])->name('index.menu');
+Route::get('/menu/data', [MenuController::class, 'getData'])->name('menu.data');
 Route::get('/menu/create', [MenuController::class, 'create'])->name('create.menu');
 Route::post('/menu/store', [MenuController::class, 'store'])->name('store.menu');
 Route::get('/menu/{id}', [MenuController::class, 'show'])->name('show.menu');

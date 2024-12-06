@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Menu;
 use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class MenuController extends Controller
 {
@@ -15,8 +16,31 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menu = Menu::all();
-        return view('menu.index', compact('menu'));
+        return view('menu.index');
+    }
+
+    public function getData()
+    {
+        $menu = Menu::select(['id', 'name', 'harga', 'stok', 'status']) // Menyaring data yang dibutuhkan
+                    ->orderBy('created_at', 'desc'); // Mengurutkan berdasarkan waktu
+
+        return DataTables::of($menu)
+            ->addIndexColumn() // Menambahkan nomor urut otomatis
+            ->addColumn('actions', function ($menu) {
+                return '<td class="text-center">
+                            <a href="' . route('show.menu', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                            <a href="' . route('edit.menu', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                            <form action="' . route('destroy.menu', $menu->id) . '" method="POST" class="d-inline">
+                                ' . csrf_field() . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')"><i class="fas fa-trash"></i> Hapus</button>
+                            </form>
+                        </td>';
+            })
+            ->addColumn('status', function ($menu) {
+                return $menu->status == 1 ? '<span class="badge bg-success">Tersedia</span>' : '<span class="badge bg-danger">Tidak Tersedia</span>';
+            })
+            ->rawColumns(['actions', 'status']) // Jangan escape HTML di kolom actions dan status
+            ->make(true);
     }
 
     /**
