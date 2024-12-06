@@ -251,6 +251,7 @@
         </div>
         <div class="modal-body text-center">
             <img src="/path/to/qris-image.png" alt="QRIS" class="img-fluid mb-3">
+            <p>Total yang harus dibayar: <span id="totalBayarQris">Rp 0</span></p>
             <button id="confirmQrisPayment" class="btn btn-success w-100">Konfirmasi Pembayaran</button>
         </div>
     </div>
@@ -436,11 +437,18 @@
             // Tampilkan modal QRIS
             document.getElementById('paymentMethodModal').style.display = 'none';
             document.getElementById('qrisPaymentModal').style.display = 'block';
+
+            // Perbarui total bayar di modal QRIS
+            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('totalBayarQris').textContent = `Rp ${totalBayar.toLocaleString('id-ID')}`;
         });
 
         // Konfirmasi pembayaran QRIS
         document.getElementById('confirmQrisPayment').addEventListener('click', function () {
-            submitPayment('QRIS');
+            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
+
+            // QRIS: uang_dibayar sama dengan total bayar, tidak ada kembalian
+            submitPayment('QRIS', totalBayar, 0);
         });
 
         // Close modal QRIS
