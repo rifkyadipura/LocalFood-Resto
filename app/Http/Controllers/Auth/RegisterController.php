@@ -11,17 +11,6 @@ use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
     /**
@@ -38,7 +27,12 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware(function ($request, $next) {
+            if ($request->user() && $request->user()->role !== 'admin') {
+                abort(403, 'Unauthorized access');
+            }
+            return $next($request);
+        })->except(['showRegistrationForm', 'register']); // Guest dapat mengakses registrasi
     }
 
     /**
@@ -53,6 +47,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['nullable', 'in:pegawai,admin'], // Role hanya diisi jika admin
         ]);
     }
 
@@ -68,13 +63,30 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => $data['role'] ?? 'pegawai', // Role default "pegawai" untuk guest
         ]);
     }
 
-    protected function registered(Request $request, $user)
+    /**
+     * Override register method to avoid session switching.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(Request $request)
     {
-        $this->guard()->logout();
+        // Validasi input
+        $this->validator($request->all())->validate();
 
+        // Simpan user baru tanpa mengubah session aktif
+        $this->create($request->all());
+
+        // Jika admin, redirect ke halaman users
+        if (auth()->check() && auth()->user()->role === 'admin') {
+            return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
+        }
+
+        // Jika guest, logout dan redirect ke login
         return redirect('/login')->with('status', 'Registration successful. Please login.');
     }
 }

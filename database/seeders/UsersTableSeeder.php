@@ -22,6 +22,7 @@ class UsersTableSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
             'remember_token' => Str::random(10),
+            'role' => 'admin',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

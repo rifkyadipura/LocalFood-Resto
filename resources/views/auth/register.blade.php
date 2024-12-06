@@ -61,6 +61,25 @@
                             </div>
                         </div>
 
+                        @if(auth()->check() && auth()->user()->role === 'admin')
+                        <div class="row mb-3">
+                            <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
+
+                            <div class="col-md-6">
+                                <select id="role" name="role" class="form-control @error('role') is-invalid @enderror" required>
+                                    <option value="pegawai" {{ old('role') === 'pegawai' ? 'selected' : '' }}>Pegawai</option>
+                                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                </select>
+
+                                @error('role')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">

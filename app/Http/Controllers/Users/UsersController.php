@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Yajra\DataTables\Facades\DataTables;
 
 class UsersController extends Controller
 {
@@ -15,8 +16,31 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        // $users = User::all();
+        // dd($users);
+        return view('users.index');
+    }
+
+    public function getData()
+    {
+        $users = User::select(['id', 'name', 'email', 'role', 'created_at'])
+                    ->orderBy('created_at', 'desc');
+
+        return DataTables::of($users)
+            ->addIndexColumn()
+            ->addColumn('actions', function ($user) {
+                return '<a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                        <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                        <form action="' . route('users.destroy', $user->id) . '" method="POST" style="display:inline-block;">
+                            ' . csrf_field() . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
+                        </form>';
+            })
+            ->addColumn('role', function ($user) {
+                return $user->role;
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
     }
 
     /**
