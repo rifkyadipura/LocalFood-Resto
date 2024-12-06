@@ -18,7 +18,7 @@
             @endif
 
             <div class="table-responsive">
-                <table id="users-table" class="table table-hover table-bordered align-middle">
+                <table id="users-table" class="table table-striped table-hover table-bordered align-middle">
                     <thead class="table-primary text-white">
                         <tr>
                             <th>No</th>
