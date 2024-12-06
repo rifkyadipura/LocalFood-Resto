@@ -29,7 +29,9 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/users', [UsersController::class, 'index'])->name('users');
 Route::get('/users/data', [UsersController::class, 'getData'])->name('users.data');
-Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
+Route::get('/users/edit/{id}', [UsersController::class, 'edit'])->name('users.edit');
+Route::put('/users/update/{id}', [UsersController::class, 'update'])->name('users.update');
+Route::delete('/users/delete/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/menu', [MenuController::class, 'index'])->name('index.menu');
 Route::get('/menu/create', [MenuController::class, 'create'])->name('create.menu');
