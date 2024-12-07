@@ -29,6 +29,20 @@
                         </tr>
                     @endforeach
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Uang Dibayar:</strong></td>
+                        <td>Rp{{ number_format($transaksis->first()->uang_dibayar, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Uang Kembalian:</strong></td>
+                        <td>Rp{{ number_format($transaksis->first()->uang_kembalian, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Metode Pembayaran:</strong></td>
+                        <td><strong>{{ $transaksis->first()->metode_pembayaran }}</strong></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
         <div class="card-footer text-end">

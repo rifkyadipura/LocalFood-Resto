@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
@@ -27,9 +28,14 @@ class TransaksiController extends Controller
 
         return DataTables::of($transaksis)
             ->addIndexColumn()
+            ->editColumn('created_at', function ($row) {
+                return Carbon::parse($row->created_at)->format('Y-m-d H:i:s');
+            })
             ->addColumn('actions', function ($row) {
                 $detailUrl = route('transaksi.show', $row->kode_transaksi);
-                return '<a href="' . $detailUrl . '" class="btn btn-info btn-sm">Lihat Detail</a>';
+                return '<a href="' . $detailUrl . '" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> Lihat Detail
+                        </a>';
             })
             ->rawColumns(['actions'])
             ->make(true);
