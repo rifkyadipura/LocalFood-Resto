@@ -218,7 +218,7 @@
     <div class="modal" id="paymentMethodModal">
         <div class="modal-header">
             <h5>Pilih Metode Pembayaran</h5>
-            <span class="modal-close-payment" id="modalClosePayment">&times;</span>
+            <span class="modal-close-payment" id="modalClosePayment" style="cursor: pointer;">&times;</span>
         </div>
         <div class="modal-body">
             <!-- Tombol untuk memilih metode pembayaran -->
@@ -231,7 +231,7 @@
     <div class="modal" id="cashPaymentModal" style="display: none;">
         <div class="modal-header">
             <h5>Pembayaran dengan Cash</h5>
-            <span class="modal-close-payment" id="modalCloseCash">&times;</span>
+            <span class="modal-close-payment" id="modalCloseCash" style="cursor: pointer;">&times;</span>
         </div>
         <div class="modal-body">
             <p>Total Bayar: <span id="totalBayar">Rp 0</span></p>
@@ -361,6 +361,26 @@
             });
 
             totalPayment.textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+
+            // Tambahkan event listener untuk menghapus item
+            cartItems.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function () {
+                    const itemIndex = parseInt(this.getAttribute('data-index'));
+
+                    // Kembalikan stok ke jumlah awal
+                    const removedItem = cart[itemIndex];
+                    const stockElement = document.querySelector(`.menu-quantity[data-id="${removedItem.menu_id}"]`).parentElement.querySelector('.card-stock');
+                    const currentStock = parseInt(stockElement.textContent.split(': ')[1]);
+                    stockElement.textContent = `Stok: ${currentStock + removedItem.quantity}`;
+
+                    // Hapus item dari keranjang
+                    cart.splice(itemIndex, 1);
+
+                    // Perbarui keranjang dan jumlah item di badge
+                    updateCartModal();
+                    document.getElementById('orderBadge').textContent = cart.length;
+                });
+            });
         }
 
         function showNotification() {
