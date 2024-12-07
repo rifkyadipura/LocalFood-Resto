@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Users\UsersController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Pemesanan\PemesananController;
+use App\Http\Controllers\Transaksi\TransaksiController;
 use App\Http\Controllers\Auth\RegisterController;
 
 /*
@@ -42,6 +43,9 @@ Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('edit.menu'
 Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('update.menu');
 Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('destroy.menu');
 
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+Route::get('/transaksi/data', [TransaksiController::class, 'getData'])->name('transaksi.data'); // Untuk DataTables
+Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
 
 // // Rute registrasi untuk guest (tanpa login)
 // Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');

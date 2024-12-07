@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('transaksi', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('kode_transaksi')->index();
             $table->unsignedBigInteger('menu_id');
             $table->integer('jumlah');
             $table->decimal('total_harga', 10, 2);

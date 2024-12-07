@@ -38,6 +38,9 @@ class PemesananController extends Controller
         $uangDibayar = $request->input('uang_dibayar') ?? $totalBayar; // Default sesuai total bayar
         $metode = $request->input('metode'); // Metode pembayaran
 
+        // Buat kode transaksi unik menggunakan model
+        $kodeTransaksi = Transaksi::generateKodeTransaksi();
+
         // Validasi jika uang yang dibayar kurang
         if ($metode === 'Cash' && $uangDibayar < $totalBayar) {
             return redirect()->back()->withErrors(['message' => 'Uang yang dibayarkan kurang!']);
@@ -45,9 +48,9 @@ class PemesananController extends Controller
 
         $uangKembalian = $uangDibayar - $totalBayar;
 
-        // Simpan transaksi dan update stok menu
         foreach ($cart as $item) {
             Transaksi::create([
+                'kode_transaksi' => $kodeTransaksi,
                 'menu_id' => $item['menu_id'],
                 'jumlah' => $item['quantity'],
                 'total_harga' => $item['total'],
@@ -63,8 +66,7 @@ class PemesananController extends Controller
             }
         }
 
-        // Return ke halaman struk
-        return view('pemesanan.struk', compact('cart', 'totalBayar', 'uangDibayar', 'uangKembalian', 'metode'));
+        return view('pemesanan.struk', compact('kodeTransaksi', 'cart', 'totalBayar', 'uangDibayar', 'uangKembalian', 'metode'));
     }
     /**
      * Show the form for creating a new resource.

@@ -95,6 +95,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('index.menu') }}">Menu</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark font-semibold" href="{{ route('transaksi.index') }}">Transaksi</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
