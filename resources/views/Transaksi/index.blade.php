@@ -8,8 +8,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="transaksi-table" class="table table-striped table-hover table-bordered">
-                    <thead>
+                <table id="transaksi-table" class="table table-striped table-hover table-bordered align-middle">
+                    <thead class="table-primary text-white">
                         <tr>
                             <th>No</th>
                             <th>Kode Transaksi</th>
