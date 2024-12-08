@@ -23,18 +23,44 @@
             <form action="{{ route('update.menu', $menu->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+
+                {{-- Nama Menu (hanya untuk admin) --}}
+                @if (auth()->user()->role === 'admin')
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Menu</label>
                     <input type="text" name="name" id="name" class="form-control" value="{{ $menu->name }}" required>
                 </div>
+
+                {{-- Harga (hanya untuk admin) --}}
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
                     <input type="number" name="harga" id="harga" class="form-control" value="{{ intval($menu->harga) }}" min="0" required>
                 </div>
+                @endif
+
+                {{-- Stok (dapat diakses oleh semua) --}}
                 <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>
                     <input type="number" name="stok" id="stok" class="form-control" value="{{ $menu->stok }}" required>
                 </div>
+
+                {{-- Kategori (hanya untuk admin) --}}
+                @if (auth()->user()->role === 'admin')
+                <div class="mb-3">
+                    <label for="kategori" class="form-label">Kategori</label>
+                    <select name="kategory_id" id="kategori" class="form-select" required>
+                        <option value="" disabled selected>Pilih Kategori</option>
+                        @foreach ($kategories as $kategori)
+                            <option value="{{ $kategori->id }}" {{ $menu->kategory_id == $kategori->id ? 'selected' : '' }}>
+                                {{ $kategori->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                {{-- Status (hanya untuk admin) --}}
+                @if (auth()->user()->role === 'admin')
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select" required>
@@ -42,6 +68,10 @@
                         <option value="0" {{ !$menu->status ? 'selected' : '' }}>Tidak Tersedia</option>
                     </select>
                 </div>
+                @endif
+
+                {{-- Foto (hanya untuk admin) --}}
+                @if (auth()->user()->role === 'admin')
                 <div class="mb-3">
                     <label for="foto" class="form-label">Foto</label>
                     @if ($menu->foto)
@@ -49,10 +79,16 @@
                     @endif
                     <input type="file" name="foto" id="foto" class="form-control">
                 </div>
+                @endif
+
+                {{-- Deskripsi (hanya untuk admin) --}}
+                @if (auth()->user()->role === 'admin')
                 <div class="mb-3">
                     <label for="deskripsi" class="form-label">Deskripsi</label>
                     <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3">{{ $menu->deskripsi }}</textarea>
                 </div>
+                @endif
+
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Simpan Perubahan
                 </button>

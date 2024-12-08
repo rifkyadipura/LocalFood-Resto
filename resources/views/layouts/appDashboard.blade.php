@@ -85,20 +85,24 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav w-100 d-lg-flex justify-content-lg-center mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark font-semibold" href="/home">Home</a>
-                        </li>
+                <ul class="navbar-nav w-100 d-lg-flex justify-content-lg-center mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark font-semibold" href="/home">Home</a>
+                    </li>
+                    @if (auth()->user()->role === 'admin')
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('users') }}">Users</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark font-semibold" href="{{ route('index.menu') }}">Menu</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('transaksi.index') }}">Transaksi</a>
                         </li>
-                    </ul>
+                    @endif
+                    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'pegawai')
+                        <li class="nav-item">
+                            <a class="nav-link text-dark font-semibold" href="{{ route('index.menu') }}">Menu</a>
+                        </li>
+                    @endif
+                </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -122,8 +126,8 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    onclick="event.preventDefault();
+                                            document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 

@@ -5,9 +5,11 @@
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Daftar Menu</h4>
-            <a href="{{ route('create.menu') }}" class="btn btn-success">
-                <i class="fas fa-plus"></i> Tambah Menu Baru
-            </a>
+            @if (auth()->user()->role === 'admin')
+                <a href="{{ route('create.menu') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tambah Menu Baru
+                </a>
+            @endif
         </div>
         <div class="card-body">
             @if (session('success'))
@@ -25,6 +27,7 @@
                             <th>Nama</th>
                             <th>Harga</th>
                             <th>Stok</th>
+                            <th>Kategori</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -54,6 +57,7 @@
                 { data: 'name', name: 'name' },
                 { data: 'harga', name: 'harga' },
                 { data: 'stok', name: 'stok' },
+                { data: 'kategori', name: 'kategori', orderable: false, searchable: false },
                 { data: 'status', name: 'status', orderable: false, searchable: false },
                 { data: 'actions', name: 'actions', orderable: false, searchable: false }
             ]

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Kategory;
 
 class MenuController extends Controller
 {
@@ -21,25 +22,34 @@ class MenuController extends Controller
 
     public function getData()
     {
-        $menu = Menu::select(['id', 'name', 'harga', 'stok', 'status']) // Menyaring data yang dibutuhkan
-                    ->orderBy('created_at', 'desc'); // Mengurutkan berdasarkan waktu
+        $menu = Menu::with('kategori') // Relasi ke tabel kategori
+                ->select(['id', 'name', 'harga', 'stok', 'status', 'kategory_id'])
+                ->orderBy('created_at', 'desc');
 
         return DataTables::of($menu)
-            ->addIndexColumn() // Menambahkan nomor urut otomatis
-            ->addColumn('actions', function ($menu) {
-                return '<td class="text-center">
-                            <a href="' . route('show.menu', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
-                            <a href="' . route('edit.menu', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
-                            <form action="' . route('destroy.menu', $menu->id) . '" method="POST" class="d-inline">
-                                ' . csrf_field() . method_field('DELETE') . '
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')"><i class="fas fa-trash"></i> Hapus</button>
-                            </form>
-                        </td>';
+            ->addIndexColumn()
+            ->addColumn('kategori', function ($menu) {
+                return $menu->kategori ? $menu->kategori->name : '-'; // Menampilkan nama kategori atau '-'
             })
             ->addColumn('status', function ($menu) {
-                return $menu->status == 1 ? '<span class="badge bg-success">Tersedia</span>' : '<span class="badge bg-danger">Tidak Tersedia</span>';
+                return $menu->status == 1
+                    ? '<span class="badge bg-success">Tersedia</span>'
+                    : '<span class="badge bg-danger">Tidak Tersedia</span>';
             })
-            ->rawColumns(['actions', 'status']) // Jangan escape HTML di kolom actions dan status
+            ->addColumn('actions', function ($menu) {
+                return '<div class="text-center">
+                            <a href="' . route('show.menu', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                            <a href="' . route('edit.menu', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
+                            . (auth()->user()->role === 'admin' ? '
+                            <form action="' . route('destroy.menu', $menu->id) . '" method="POST" class="d-inline">
+                                ' . csrf_field() . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </form>' : '') . '
+                        </div>';
+            })
+            ->rawColumns(['status', 'actions'])
             ->make(true);
     }
 
@@ -50,7 +60,9 @@ class MenuController extends Controller
      */
     public function create()
     {
-        return view('menu.create');
+        $kategories = Kategory::all(); // Mengambil semua kategori
+        // dd("$kategories");
+        return view('menu.create', compact('kategories'));
     }
 
     /**
@@ -84,6 +96,7 @@ class MenuController extends Controller
             'name' => $request->name,
             'harga' => $request->harga,
             'stok' => $request->stok,
+            'kategory_id' => $request->kategory_id,
             'status' => $request->status,
             'foto' => $filePath,
             'deskripsi' => $request->deskripsi,
@@ -113,7 +126,8 @@ class MenuController extends Controller
     public function edit($id)
     {
         $menu = Menu::findOrFail($id);
-        return view('menu.edit', compact('menu'));
+        $kategories = Kategory::all(); // Mengambil semua kategori
+        return view('menu.edit', compact('menu', 'kategories'));
     }
 
     /**
@@ -125,39 +139,59 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'harga' => 'required|numeric|min:0',
-            'stok' => 'required|integer|min:0',
-            'status' => 'required|boolean',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'deskripsi' => 'nullable|string',
-        ]);
-
         $menu = Menu::findOrFail($id);
 
-        // Proses upload foto baru jika ada
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/menu'), $fileName);
-            $filePath = 'uploads/menu/' . $fileName;
+        // Cek role pengguna
+        if (auth()->user()->role === 'admin') {
+            // Validasi untuk admin
+            $request->validate([
+                'name' => 'string|max:255',
+                'harga' => 'numeric|min:0',
+                'stok' => 'required|integer|min:0',
+                'status' => 'boolean',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'deskripsi' => 'nullable|string',
+            ]);
 
-            // Hapus foto lama jika ada
-            if ($menu->foto && file_exists(public_path($menu->foto))) {
-                unlink(public_path($menu->foto));
+            // Proses upload foto baru jika ada
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/menu'), $fileName);
+                $filePath = 'uploads/menu/' . $fileName;
+
+                // Hapus foto lama jika ada
+                if ($menu->foto && file_exists(public_path($menu->foto))) {
+                    unlink(public_path($menu->foto));
+                }
+
+                $menu->foto = $filePath;
             }
 
-            $menu->foto = $filePath;
-        }
+            // Update semua kolom (admin)
+            $menu->update([
+                'name' => $request->name,
+                'harga' => $request->harga,
+                'stok' => $request->stok,
+                'kategory_id' => $request->kategory_id,
+                'status' => $request->status,
+                'deskripsi' => $request->deskripsi,
+                'foto' => $menu->foto ?? null,
+            ]);
+        } elseif (auth()->user()->role === 'pegawai') {
+            // Validasi untuk pegawai
+            $request->validate([
+                'stok' => 'required|integer|min:0',
+            ]);
 
-        $menu->update([
-            'name' => $request->name,
-            'harga' => $request->harga,
-            'stok' => $request->stok,
-            'status' => $request->status,
-            'deskripsi' => $request->deskripsi,
-        ]);
+            // Update hanya stok (pegawai)
+            $menu->update([
+                'stok' => $request->stok,
+            ]);
+        } else {
+            // Jika role tidak sesuai
+            abort(403, 'Unauthorized action.');
+        }
 
         return redirect()->route('index.menu')->with('success', 'Menu berhasil diperbarui!');
     }

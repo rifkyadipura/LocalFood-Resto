@@ -35,6 +35,15 @@
                     <input type="number" name="stok" id="stok" class="form-control" placeholder="Masukkan stok menu" required>
                 </div>
                 <div class="mb-3">
+                    <label for="kategori" class="form-label">Kategori</label>
+                    <select name="kategory_id" id="kategori" class="form-select" required>
+                        <option value="" disabled selected>Pilih Kategori</option>
+                        @foreach ($kategories as $kategori)
+                            <option value="{{ $kategori->id }}">{{ $kategori->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select" required>
                         <option value="1">Tersedia</option>

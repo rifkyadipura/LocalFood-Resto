@@ -16,6 +16,7 @@ class Menu extends Model
     protected $fillable = [
         'name',
         'stok',
+        'kategory_id',
         'status',
         'foto',
         'deskripsi',
@@ -26,4 +27,9 @@ class Menu extends Model
     protected $casts = [
         'status' => 'boolean',
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(\App\Models\Kategory::class, 'kategory_id');
+    }
 }

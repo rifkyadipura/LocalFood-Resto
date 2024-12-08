@@ -237,7 +237,7 @@
             <p>Total Bayar: <span id="totalBayar">Rp 0</span></p>
             <div class="mb-3">
                 <label for="uangDibayar" class="form-label">Masukkan Uang Dibayar:</label>
-                <input type="number" id="uangDibayar" class="form-control" placeholder="Jumlah uang yang dibayarkan">
+                <input type="text" id="uangDibayar" class="form-control" placeholder="Jumlah uang yang dibayarkan">
             </div>
             <button id="submitCashPayment" class="btn btn-success w-100">Proses Pembayaran</button>
         </div>
@@ -263,27 +263,77 @@
 
     <!-- Section Cards -->
     <div class="container mt-5">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach($menus as $menu)
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-img-container">
-                        <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $menu->name }}</h5>
-                        <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
-                        <p class="card-stock">Stok: {{ $menu->stok }}</p>
-                        <p class="card-text">{{ $menu->deskripsi }}</p>
-                        <input type="number" class="form-control mb-2 menu-quantity"
-                            placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                            data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
-                        <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
-                    </div>
+    <!-- Tampilkan kategori Makanan Berat -->
+    <h3 class="text-primary">Makanan Berat</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach($menus->where('kategory_id', 1) as $menu)
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-img-container">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
+                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <input type="number" class="form-control mb-2 menu-quantity"
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
+                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                    <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
-            @endforeach
         </div>
+        @endforeach
+    </div>
+
+    <!-- Tampilkan kategori Makanan Ringan -->
+    <h3 class="text-primary mt-5">Makanan Ringan</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach($menus->where('kategory_id', 2) as $menu)
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-img-container">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
+                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <input type="number" class="form-control mb-2 menu-quantity"
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
+                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                    <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Tampilkan kategori Minuman -->
+    <h3 class="text-primary mt-5">Minuman</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach($menus->where('kategory_id', 3) as $menu)
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-img-container">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
+                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <input type="number" class="form-control mb-2 menu-quantity"
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
+                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                    <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
     </div>
 
     <script>
@@ -433,11 +483,38 @@
             const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
             document.getElementById('totalBayar').textContent = `Rp ${totalBayar.toLocaleString('id-ID')}`;
         });
+            
+        // Fungsi untuk memformat angka ke Rupiah
+        function formatRupiah(angka, prefix = "Rp ") {
+            const numberString = angka.replace(/[^,\d]/g, "").toString(); // Hapus karakter non-digit
+            const split = numberString.split(",");
+            const sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                const separator = sisa ? "." : "";
+                rupiah += separator + ribuan.join(".");
+            }
+
+            return prefix + rupiah + (split[1] !== undefined ? "," + split[1] : "");
+        }
+
+        // Event untuk memformat input menjadi Rupiah
+        document.getElementById('uangDibayar').addEventListener('input', function (e) {
+            const input = e.target;
+            const cleanValue = input.value.replace(/[^\d]/g, ""); // Hapus format Rupiah sebelumnya
+            input.value = formatRupiah(cleanValue); // Terapkan format Rupiah
+        });
 
         // Proses pembayaran cash
         document.getElementById('submitCashPayment').addEventListener('click', function () {
-            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
-            const uangDibayar = parseFloat(document.getElementById('uangDibayar').value);
+            const totalBayar = parseFloat(
+                document.getElementById('totalBayar').innerText.replace(/[^,\d]/g, "")
+            ); // Total bayar tanpa format Rupiah
+            const uangDibayar = parseFloat(
+                document.getElementById('uangDibayar').value.replace(/[^,\d]/g, "")
+            ); // Uang dibayar tanpa format Rupiah
 
             if (uangDibayar < totalBayar) {
                 alert('Uang yang dibayarkan kurang!');

@@ -36,6 +36,10 @@
                                 <td>{{ $menu->stok }}</td>
                             </tr>
                             <tr>
+                                <th>Kategori</th>
+                                <td>{{ $menu->kategori->name ?? 'Tidak ada kategori' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Status</th>
                                 <td>
                                     @if ($menu->status == 1)
