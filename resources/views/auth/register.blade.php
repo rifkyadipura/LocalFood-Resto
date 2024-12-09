@@ -68,7 +68,7 @@
                 @endif
 
                 <button type="submit" class="btn btn-primary">
-                    {{ __('Register') }}
+                    <i class="fas fa-save"></i> {{ __('Register') }}
                 </button>
             </form>
         </div>
