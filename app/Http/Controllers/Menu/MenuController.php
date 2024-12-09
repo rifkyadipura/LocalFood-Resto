@@ -7,6 +7,7 @@ use App\Models\Menu;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Kategory;
+use NumberFormatter;
 
 class MenuController extends Controller
 {
@@ -22,14 +23,17 @@ class MenuController extends Controller
 
     public function getData()
     {
-        $menu = Menu::with('kategori') // Relasi ke tabel kategori
+        $menu = Menu::with('kategori')
                 ->select(['id', 'name', 'harga', 'stok', 'status', 'kategory_id'])
                 ->orderBy('created_at', 'desc');
 
         return DataTables::of($menu)
             ->addIndexColumn()
             ->addColumn('kategori', function ($menu) {
-                return $menu->kategori ? $menu->kategori->name : '-'; // Menampilkan nama kategori atau '-'
+                return $menu->kategori ? $menu->kategori->name : '-';
+            })
+            ->addColumn('harga', function ($menu) {
+                return 'Rp ' . number_format($menu->harga, 0, ',', '.');
             })
             ->addColumn('status', function ($menu) {
                 return $menu->status == 1

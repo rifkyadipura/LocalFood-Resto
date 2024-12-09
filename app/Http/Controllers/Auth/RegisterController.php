@@ -32,7 +32,7 @@ class RegisterController extends Controller
                 abort(403, 'Unauthorized access');
             }
             return $next($request);
-        })->except(['showRegistrationForm', 'register']); // Guest dapat mengakses registrasi
+        })->except(['showRegistrationForm', 'register']);
     }
 
     /**
@@ -47,7 +47,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['nullable', 'in:pegawai,admin'], // Role hanya diisi jika admin
+            'role' => ['nullable', 'in:pegawai,admin'],
         ]);
     }
 
@@ -63,7 +63,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'] ?? 'pegawai', // Role default "pegawai" untuk guest
+            'role' => $data['role'] ?? 'pegawai',
         ]);
     }
 
@@ -75,18 +75,14 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        // Validasi input
         $this->validator($request->all())->validate();
 
-        // Simpan user baru tanpa mengubah session aktif
         $this->create($request->all());
 
-        // Jika admin, redirect ke halaman users
         if (auth()->check() && auth()->user()->role === 'admin') {
-            return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
+            return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
         }
 
-        // Jika guest, logout dan redirect ke login
         return redirect('/login')->with('status', 'Registration successful. Please login.');
     }
 }

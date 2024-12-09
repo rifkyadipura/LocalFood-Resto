@@ -20,11 +20,22 @@ class TransaksiController extends Controller
         return view('transaksi.index');
     }
 
-    public function getData()
+    public function getData(Request $request)
     {
         $transaksis = Transaksi::select('kode_transaksi', 'created_at')
             ->groupBy('kode_transaksi', 'created_at')
             ->orderBy('created_at', 'desc');
+
+        // Cek apakah ada filter start_date dan end_date
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay(); // Awal hari
+            $endDate = Carbon::parse($request->end_date)->endOfDay(); // Akhir hari
+            $transaksis->whereBetween('created_at', [$startDate, $endDate]);
+        } else {
+            // Jika tidak ada filter, tampilkan data hanya untuk hari ini
+            $today = Carbon::today();
+            $transaksis->whereDate('created_at', $today);
+        }
 
         return DataTables::of($transaksis)
             ->addIndexColumn()

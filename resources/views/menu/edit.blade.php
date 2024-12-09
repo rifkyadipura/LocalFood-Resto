@@ -33,8 +33,9 @@
 
                 {{-- Harga (hanya untuk admin) --}}
                 <div class="mb-3">
-                    <label for="harga" class="form-label">Harga</label>
-                    <input type="number" name="harga" id="harga" class="form-control" value="{{ intval($menu->harga) }}" min="0" required>
+                    <label for="harga_display" class="form-label">Harga</label>
+                    <input type="text" id="harga_display" class="form-control" value="{{ $menu->harga ? 'Rp ' . number_format($menu->harga, 0, ',', '.') : '' }}" required>
+                    <input type="hidden" name="harga" id="harga" value="{{ $menu->harga }}">
                 </div>
                 @endif
 
@@ -96,4 +97,29 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hargaDisplay = document.getElementById('harga_display');
+        const hargaHidden = document.getElementById('harga');
+
+        // Format awal saat halaman dimuat
+        if (hargaHidden.value) {
+            hargaDisplay.value = formatRupiah(hargaHidden.value);
+        }
+
+        // Event listener untuk memformat input teks
+        hargaDisplay.addEventListener('input', function (e) {
+            const value = e.target.value.replace(/[^0-9]/g, ''); // Hanya angka
+            hargaDisplay.value = formatRupiah(value);
+            hargaHidden.value = value; // Simpan angka murni ke input hidden
+        });
+
+        function formatRupiah(number) {
+            if (!number) return 'Rp ';
+            return 'Rp ' + new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 0,
+            }).format(number);
+        }
+    });
+</script>
 @endsection

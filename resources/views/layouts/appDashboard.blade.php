@@ -91,7 +91,7 @@
                     </li>
                     @if (auth()->user()->role === 'admin')
                         <li class="nav-item">
-                            <a class="nav-link text-dark font-semibold" href="{{ route('users') }}">Users</a>
+                            <a class="nav-link text-dark font-semibold" href="{{ route('users.index') }}">Users</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('transaksi.index') }}">Transaksi</a>

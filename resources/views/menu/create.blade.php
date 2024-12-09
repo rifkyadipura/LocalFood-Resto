@@ -28,7 +28,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
-                    <input type="number" name="harga" id="harga" class="form-control" placeholder="Masukkan harga menu" step="0.01" min="0" required>
+                    <input type="text" name="formatted_harga" id="formatted_harga" class="form-control" placeholder="Masukkan harga menu" required>
+                    <input type="hidden" name="harga" id="harga">
                 </div>
                 <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>
@@ -65,4 +66,24 @@
         </div>
     </div>
 </div>
+<script>
+    const formattedHarga = document.getElementById('formatted_harga');
+    const harga = document.getElementById('harga');
+
+    formattedHarga.addEventListener('input', function (e) {
+        // Ambil nilai dari input dan hapus format Rupiah
+        let value = this.value.replace(/\D/g, '');
+        // Ubah ke format Rupiah
+        let formattedValue = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+        // Tampilkan nilai yang diformat
+        this.value = formattedValue;
+        // Simpan nilai asli ke input tersembunyi
+        harga.value = value;
+    });
+</script>
+
 @endsection
