@@ -7,9 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth");
+        date_default_timezone_set("Asia/Jakarta");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +23,14 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        return view('transaksi.index');
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('transaksi.index');
+        } else {
+            $title = "Akses Ditolak";
+            $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
+            $redirectUrl = route('home');
+            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+        }
     }
 
     public function getData(Request $request)
@@ -81,11 +94,17 @@ class TransaksiController extends Controller
      */
     public function show($kode_transaksi)
     {
-        $transaksis = Transaksi::with('menu')
-            ->where('kode_transaksi', $kode_transaksi)
-            ->get();
-
-        return view('transaksi.detail', compact('transaksis', 'kode_transaksi'));
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $transaksis = Transaksi::with('menu')
+                ->where('kode_transaksi', $kode_transaksi)
+                ->get();
+            return view('transaksi.detail', compact('transaksis', 'kode_transaksi'));
+        } else {
+            $title = "Akses Ditolak";
+            $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
+            $redirectUrl = route('home');
+            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+        }
     }
 
     /**
