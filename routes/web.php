@@ -46,13 +46,3 @@ Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('de
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
 Route::get('/transaksi/data', [TransaksiController::class, 'getData'])->name('transaksi.data'); // Untuk DataTables
 Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
-
-// // Rute registrasi untuk guest (tanpa login)
-// Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-// Route::post('/register', [RegisterController::class, 'register']);
-
-// // Rute registrasi untuk admin (dengan login)
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/admin/register', [RegisterController::class, 'showRegistrationForm'])->name('admin.register');
-//     Route::post('/admin/register', [RegisterController::class, 'register']);
-// });

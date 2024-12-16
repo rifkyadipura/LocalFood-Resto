@@ -6,9 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth");
+        date_default_timezone_set("Asia/Jakarta");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +22,14 @@ class UsersController extends Controller
      */
     public function index()
     {
-        // $users = User::all();
-        // dd($users);
-        return view('users.index');
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return view('users.index');
+        } else {
+            $title = "Akses Ditolak";
+            $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
+            $redirectUrl = route('home');
+            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+        }
     }
 
     public function getData()
@@ -51,11 +62,15 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        // Ambil data user berdasarkan ID
-        $user = User::findOrFail($id);
-
-        // Kembalikan ke halaman edit dengan data user
-        return view('users.edit', compact('user'));
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $user = User::findOrFail($id);
+            return view('users.edit', compact('user'));
+        } else {
+            $title = "Akses Ditolak";
+            $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
+            $redirectUrl = route('home');
+            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+        }
     }
 
     /**
@@ -67,23 +82,19 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id, // Memastikan email unik kecuali pada user yang sedang diedit
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role' => 'required|in:pegawai,admin',
         ]);
 
-        // Ambil data user berdasarkan ID
         $user = User::findOrFail($id);
 
-        // Update data user
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
-        $user->save(); // Simpan perubahan
+        $user->save();
 
-        // Redirect kembali ke halaman users dengan pesan sukses
         return redirect()->route('users')->with('success', 'User berhasil diupdate.');
     }
 
@@ -95,13 +106,9 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        // Ambil data user berdasarkan ID
         $user = User::findOrFail($id);
-
-        // Hapus user
         $user->delete();
 
-        // Redirect ke halaman daftar users dengan pesan sukses
         return redirect()->route('users')->with('success', 'User berhasil dihapus!');
     }
 }
