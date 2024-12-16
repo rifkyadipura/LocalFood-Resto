@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Kategory;
 use NumberFormatter;
+use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth");
+        date_default_timezone_set("Asia/Jakarta");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -64,9 +70,15 @@ class MenuController extends Controller
      */
     public function create()
     {
-        $kategories = Kategory::all(); // Mengambil semua kategori
-        // dd("$kategories");
-        return view('menu.create', compact('kategories'));
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $kategories = Kategory::all();
+            return view('menu.create', compact('kategories'));
+        } else {
+            $title = "Akses Ditolak";
+            $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
+            $redirectUrl = route('home');
+            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+        }
     }
 
     /**
@@ -86,14 +98,12 @@ class MenuController extends Controller
             'deskripsi' => 'nullable|string',
         ]);
 
-        // Upload foto ke folder public/uploads/menu
         $filePath = null;
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            // Nama file berdasarkan nama menu
             $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/menu'), $fileName); // Pindahkan ke folder public/uploads/menu
-            $filePath = 'uploads/menu/' . $fileName; // Path relatif untuk database
+            $file->move(public_path('uploads/menu'), $fileName);
+            $filePath = 'uploads/menu/' . $fileName;
         }
 
         Menu::create([
@@ -130,7 +140,7 @@ class MenuController extends Controller
     public function edit($id)
     {
         $menu = Menu::findOrFail($id);
-        $kategories = Kategory::all(); // Mengambil semua kategori
+        $kategories = Kategory::all();
         return view('menu.edit', compact('menu', 'kategories'));
     }
 
@@ -145,9 +155,7 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
 
-        // Cek role pengguna
         if (auth()->user()->role === 'admin') {
-            // Validasi untuk admin
             $request->validate([
                 'name' => 'string|max:255',
                 'harga' => 'numeric|min:0',
@@ -157,14 +165,12 @@ class MenuController extends Controller
                 'deskripsi' => 'nullable|string',
             ]);
 
-            // Proses upload foto baru jika ada
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
                 $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/menu'), $fileName);
                 $filePath = 'uploads/menu/' . $fileName;
 
-                // Hapus foto lama jika ada
                 if ($menu->foto && file_exists(public_path($menu->foto))) {
                     unlink(public_path($menu->foto));
                 }
@@ -172,7 +178,6 @@ class MenuController extends Controller
                 $menu->foto = $filePath;
             }
 
-            // Update semua kolom (admin)
             $menu->update([
                 'name' => $request->name,
                 'harga' => $request->harga,
@@ -183,17 +188,14 @@ class MenuController extends Controller
                 'foto' => $menu->foto ?? null,
             ]);
         } elseif (auth()->user()->role === 'pegawai') {
-            // Validasi untuk pegawai
             $request->validate([
                 'stok' => 'required|integer|min:0',
             ]);
 
-            // Update hanya stok (pegawai)
             $menu->update([
                 'stok' => $request->stok,
             ]);
         } else {
-            // Jika role tidak sesuai
             abort(403, 'Unauthorized action.');
         }
 
