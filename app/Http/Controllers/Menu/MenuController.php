@@ -48,10 +48,10 @@ class MenuController extends Controller
             })
             ->addColumn('actions', function ($menu) {
                 return '<div class="text-center">
-                            <a href="' . route('show.menu', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
-                            <a href="' . route('edit.menu', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
+                            <a href="' . route('menu.show', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                            <a href="' . route('menu.edit', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
                             . (auth()->user()->role === 'admin' ? '
-                            <form action="' . route('destroy.menu', $menu->id) . '" method="POST" class="d-inline">
+                            <form action="' . route('menu.destroy', $menu->id) . '" method="POST" class="d-inline">
                                 ' . csrf_field() . method_field('DELETE') . '
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
                                     <i class="fas fa-trash"></i> Hapus
@@ -116,7 +116,7 @@ class MenuController extends Controller
             'deskripsi' => $request->deskripsi,
         ]);
 
-        return redirect()->route('index.menu')->with('success', 'Menu berhasil ditambahkan!');
+        return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan!');
     }
 
     /**
@@ -199,7 +199,7 @@ class MenuController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return redirect()->route('index.menu')->with('success', 'Menu berhasil diperbarui!');
+        return redirect()->route('menu.index')->with('success', 'Menu berhasil diperbarui!');
     }
 
     /**
@@ -216,6 +216,6 @@ class MenuController extends Controller
         }
         $menu->delete();
 
-        return redirect()->route('index.menu')->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('menu.index')->with('success', 'Menu berhasil dihapus!');
     }
 }

@@ -34,15 +34,15 @@ Route::get('/users/edit/{id}', [UsersController::class, 'edit'])->name('users.ed
 Route::put('/users/update/{id}', [UsersController::class, 'update'])->name('users.update');
 Route::delete('/users/delete/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
-Route::get('/menu', [MenuController::class, 'index'])->name('index.menu');
+Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('/menu/data', [MenuController::class, 'getData'])->name('menu.data');
-Route::get('/menu/create', [MenuController::class, 'create'])->name('create.menu');
-Route::post('/menu/store', [MenuController::class, 'store'])->name('store.menu');
-Route::get('/menu/{id}', [MenuController::class, 'show'])->name('show.menu');
-Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('edit.menu');
-Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('update.menu');
-Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('destroy.menu');
+Route::get('/menu/create', [MenuController::class, 'create'])->name('menu.create');
+Route::post('/menu/store', [MenuController::class, 'store'])->name('menu.store');
+Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.show');
+Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
+Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
+Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
-Route::get('/transaksi/data', [TransaksiController::class, 'getData'])->name('transaksi.data'); // Untuk DataTables
+Route::get('/transaksi/data', [TransaksiController::class, 'getData'])->name('transaksi.data');
 Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');

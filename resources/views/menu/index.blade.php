@@ -6,7 +6,7 @@
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Daftar Menu</h4>
             @if (auth()->user()->role === 'admin')
-                <a href="{{ route('create.menu') }}" class="btn btn-success">
+                <a href="{{ route('menu.create') }}" class="btn btn-success">
                     <i class="fas fa-plus"></i> Tambah Menu Baru
                 </a>
             @endif

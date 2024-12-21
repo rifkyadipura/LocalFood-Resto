@@ -99,7 +99,7 @@
                     @endif
                     @if (auth()->user()->role === 'admin' || auth()->user()->role === 'pegawai')
                         <li class="nav-item">
-                            <a class="nav-link text-dark font-semibold" href="{{ route('index.menu') }}">Menu</a>
+                            <a class="nav-link text-dark font-semibold" href="{{ route('menu.index') }}">Menu</a>
                         </li>
                     @endif
                 </ul>

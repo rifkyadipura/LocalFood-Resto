@@ -5,7 +5,7 @@
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Edit Menu</h4>
-            <a href="{{ route('index.menu') }}" class="btn btn-light">
+            <a href="{{ route('menu.index') }}" class="btn btn-light">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Menu
             </a>
         </div>
@@ -20,7 +20,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('update.menu', $menu->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
