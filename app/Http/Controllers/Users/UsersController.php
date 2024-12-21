@@ -34,23 +34,27 @@ class UsersController extends Controller
 
     public function getData()
     {
-        $users = User::select(['id', 'name', 'email', 'role', 'created_at'])
-                    ->orderBy('created_at', 'desc');
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $users = User::select(['id', 'name', 'email', 'role', 'created_at'])
+                ->orderBy('created_at', 'desc');
 
-        return DataTables::of($users)
-            ->addIndexColumn()
-            ->addColumn('actions', function ($user) {
-                return '<a href="' . route('users.edit', $user->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
-                        <form action="' . route('users.destroy', $user->id) . '" method="POST" style="display:inline-block;">
-                            ' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
-                        </form>';
-            })
-            ->addColumn('role', function ($user) {
-                return $user->role;
-            })
-            ->rawColumns(['actions'])
-            ->make(true);
+            return DataTables::of($users)
+                ->addIndexColumn()
+                ->addColumn('actions', function ($user) {
+                    return '<a href="' . route('users.edit', $user->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                            <form action="' . route('users.destroy', $user->id) . '" method="POST" style="display:inline-block;">
+                                ' . csrf_field() . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
+                            </form>';
+                })
+                ->addColumn('role', function ($user) {
+                    return $user->role;
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
     }
 
 
@@ -63,7 +67,12 @@ class UsersController extends Controller
     public function edit($id)
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $user = User::findOrFail($id);
+            $user = User::find($id);
+
+            if (!$user) {
+                return redirect()->route('users.index')->with('error', 'User tidak ditemukan!');
+            }
+
             return view('users.edit', compact('user'));
         } else {
             $title = "Akses Ditolak";
@@ -95,7 +104,7 @@ class UsersController extends Controller
         $user->role = $request->role;
         $user->save();
 
-        return redirect()->route('users')->with('success', 'User berhasil diupdate.');
+        return redirect()->route('users.index')->with('success', 'User berhasil diupdate.');
     }
 
     /**
@@ -109,6 +118,6 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('users')->with('success', 'User berhasil dihapus!');
+        return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
     }
 }

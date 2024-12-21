@@ -5,7 +5,7 @@
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Edit Pengguna</h4>
-            <a href="{{ route('users') }}" class="btn btn-light">
+            <a href="route('users.index')" class="btn btn-light">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
