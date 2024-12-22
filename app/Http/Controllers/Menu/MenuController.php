@@ -9,6 +9,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\Kategory;
 use NumberFormatter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MenuController extends Controller
 {
@@ -77,7 +78,7 @@ class MenuController extends Controller
             $title = "Akses Ditolak";
             $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
             $redirectUrl = route('home');
-            return view('errors.error', compact('title', 'message', 'redirectUrl'));
+            return response()->view('errors.error', compact('title', 'message', 'redirectUrl'), 403);
         }
     }
 
@@ -173,6 +174,8 @@ class MenuController extends Controller
 
                 if ($menu->foto && file_exists(public_path($menu->foto))) {
                     unlink(public_path($menu->foto));
+                } else {
+                    Log::warning('Logika unlink tidak dijalankan karena foto tidak ditemukan atau kosong.');
                 }
 
                 $menu->foto = $filePath;
