@@ -465,6 +465,11 @@
                 return;
             }
 
+            // Menampilkan modal jika variabel 'showPaymentModal' bernilai true
+            @if(session('showPaymentModal'))
+                document.getElementById('paymentMethodModal').style.display = 'block';
+                document.getElementById('modalOverlay').style.display = 'block';
+            @endif
             // Tampilkan modal metode pembayaran
             document.getElementById('paymentMethodModal').style.display = 'block';
             document.getElementById('modalOverlay').style.display = 'block';
