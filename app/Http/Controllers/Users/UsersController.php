@@ -35,8 +35,8 @@ class UsersController extends Controller
     public function getData()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
-            $users = User::select(['id', 'name', 'email', 'role', 'created_at'])
-                ->orderBy('created_at', 'desc');
+            $users = User::select(['id', 'nama_lengkap', 'email', 'role', 'created_at'])
+                ->orderBy('id', 'desc');
 
             return DataTables::of($users)
                 ->addIndexColumn()
@@ -92,14 +92,14 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama_lengkap' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'role' => 'required|in:pegawai,admin',
+            'role' => 'required|in:Kepala Staf,Kasir',
         ]);
 
         $user = User::findOrFail($id);
 
-        $user->name = $request->name;
+        $user->nama_lengkap = $request->nama_lengkap;
         $user->email = $request->email;
         $user->role = $request->role;
         $user->save();

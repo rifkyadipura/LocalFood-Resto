@@ -190,7 +190,7 @@ class MenuController extends Controller
                 'deskripsi' => $request->deskripsi,
                 'foto' => $menu->foto ?? null,
             ]);
-        } elseif (auth()->user()->role === 'pegawai') {
+        } elseif (auth()->user()->role === 'Kasir') {
             $request->validate([
                 'stok' => 'required|integer|min:0',
             ]);

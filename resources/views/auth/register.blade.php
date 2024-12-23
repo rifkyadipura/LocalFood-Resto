@@ -14,10 +14,10 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama</label>
-                    <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                    <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
+                    <input id="nama_lengkap" type="text" class="form-control @error('nama_lengkap') is-invalid @enderror" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required autocomplete="nama_lengkap" autofocus>
 
-                    @error('name')
+                    @error('nama_lengkap')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
@@ -51,12 +51,12 @@
                     <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                 </div>
 
-                @if(auth()->check() && auth()->user()->role === 'admin')
+                @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="role" class="form-label">Role</label>
                     <select id="role" name="role" class="form-select @error('role') is-invalid @enderror" required>
-                        <option value="pegawai" {{ old('role') === 'pegawai' ? 'selected' : '' }}>Pegawai</option>
-                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="Kepala Staf" {{ old('role') === 'Kepala Staf' ? 'selected' : '' }}>Kepala Staf</option>
+                        <option value="Kasir" {{ old('role') === 'Kasir' ? 'selected' : '' }}>Kasir</option>
                     </select>
 
                     @error('role')

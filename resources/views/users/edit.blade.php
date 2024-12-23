@@ -22,10 +22,10 @@
                 @method('PUT')
 
                 <div class="row mb-3">
-                    <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
+                    <label for="nama_lengkap" class="col-md-4 col-form-label text-md-end">{{ __('Nama Lengkap') }}</label>
                     <div class="col-md-6">
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $user->name) }}" required autofocus>
-                        @error('name')
+                        <input id="nama_lengkap" type="text" class="form-control @error('nama_lengkap') is-invalid @enderror" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}" required autofocus>
+                        @error('nama_lengkap')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -49,8 +49,8 @@
                     <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
                     <div class="col-md-6">
                         <select id="role" class="form-control @error('role') is-invalid @enderror" name="role" required>
-                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="pegawai" {{ old('role', $user->role) == 'pegawai' ? 'selected' : '' }}>Pegawai</option>
+                            <option value="Kepala Staf" {{ old('role', $user->role) == 'Kepala Staf' ? 'selected' : '' }}>Kepala Staf</option>
+                            <option value="Kasir" {{ old('role', $user->role) == 'Kasir' ? 'selected' : '' }}>Kasir</option>
                         </select>
                         @error('role')
                             <span class="invalid-feedback" role="alert">

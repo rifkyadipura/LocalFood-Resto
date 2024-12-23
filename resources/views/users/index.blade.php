@@ -22,7 +22,7 @@
                     <thead class="table-primary text-white">
                         <tr>
                             <th>No</th>
-                            <th>Nama</th>
+                            <th>Nama Lengkap</th>
                             <th>Email</th>
                             <th>Role</th>
                             <th>Aksi</th>
@@ -50,7 +50,7 @@
             order: [[0, 'desc']], // Mengurutkan berdasarkan kolom pertama (DT_RowIndex) secara menurun
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
+                { data: 'nama_lengkap', name: 'nama_lengkap' },
                 { data: 'email', name: 'email' },
                 { data: 'role', name: 'role' },
                 {
