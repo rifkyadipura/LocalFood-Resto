@@ -30,7 +30,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if ($request->user() && $request->user()->role !== 'admin') {
+            if ($request->user() && !in_array($request->user()->role, ['admin', 'Kepala Staf'])) {
                 abort(403, 'Unauthorized access');
             }
             return $next($request);
@@ -49,7 +49,7 @@ class RegisterController extends Controller
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['nullable', 'in:pegawai,admin'],
+            'role' => ['nullable'],
         ]);
     }
 
@@ -66,7 +66,7 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make($data['password']),
-            'role' => $data['role'] ?? 'pegawai',
+            'role' => $data['role'],
             'remember_token' => Str::random(10),
         ]);
     }
@@ -83,7 +83,7 @@ class RegisterController extends Controller
 
         $this->create($request->all());
 
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'Kepala Staf'])) {
             return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
         }
 

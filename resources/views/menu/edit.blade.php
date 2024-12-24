@@ -24,14 +24,14 @@
                 @csrf
                 @method('PUT')
 
-                {{-- Nama Menu (hanya untuk admin) --}}
-                @if (auth()->user()->role === 'admin')
+                {{-- Nama Menu (hanya untuk admin dan Kepala Staf) --}}
+                @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Menu</label>
                     <input type="text" name="name" id="name" class="form-control" value="{{ $menu->name }}" required>
                 </div>
 
-                {{-- Harga (hanya untuk admin) --}}
+                {{-- Harga (hanya untuk admin dan Kepala Staf) --}}
                 <div class="mb-3">
                     <label for="harga_display" class="form-label">Harga</label>
                     <input type="text" id="harga_display" class="form-control" value="{{ $menu->harga ? 'Rp ' . number_format($menu->harga, 0, ',', '.') : '' }}" required>
@@ -45,8 +45,8 @@
                     <input type="number" name="stok" id="stok" class="form-control" value="{{ $menu->stok }}" required>
                 </div>
 
-                {{-- Kategori (hanya untuk admin) --}}
-                @if (auth()->user()->role === 'admin')
+                {{-- Kategori (hanya untuk admin dan Kepala Staf) --}}
+                @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="kategori" class="form-label">Kategori</label>
                     <select name="kategory_id" id="kategori" class="form-select" required>
@@ -60,8 +60,8 @@
                 </div>
                 @endif
 
-                {{-- Status (hanya untuk admin) --}}
-                @if (auth()->user()->role === 'admin')
+                {{-- Status (hanya untuk admin dan Kepala Staf) --}}
+                @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select" required>
@@ -71,8 +71,8 @@
                 </div>
                 @endif
 
-                {{-- Foto (hanya untuk admin) --}}
-                @if (auth()->user()->role === 'admin')
+                {{-- Foto (hanya untuk admin dan Kepala Staf) --}}
+                @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="foto" class="form-label">Foto</label>
                     @if ($menu->foto)
@@ -82,8 +82,8 @@
                 </div>
                 @endif
 
-                {{-- Deskripsi (hanya untuk admin) --}}
-                @if (auth()->user()->role === 'admin')
+                {{-- Deskripsi (hanya untuk admin dan Kepala Staf) --}}
+                @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
                     <label for="deskripsi" class="form-label">Deskripsi</label>
                     <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3">{{ $menu->deskripsi }}</textarea>

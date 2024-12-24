@@ -22,7 +22,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
             return view('users.index');
         } else {
             $title = "Akses Ditolak";
@@ -34,7 +34,7 @@ class UsersController extends Controller
 
     public function getData()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
             $users = User::select(['id', 'nama_lengkap', 'email', 'role', 'created_at'])
                 ->orderBy('id', 'desc');
 
@@ -66,7 +66,7 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
             $user = User::find($id);
 
             if (!$user) {

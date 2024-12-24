@@ -5,7 +5,7 @@
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Daftar Menu</h4>
-            @if (auth()->user()->role === 'admin')
+            @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <a href="{{ route('menu.create') }}" class="btn btn-success">
                     <i class="fas fa-plus"></i> Tambah Menu Baru
                 </a>

@@ -51,7 +51,7 @@ class MenuController extends Controller
                 return '<div class="text-center">
                             <a href="' . route('menu.show', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
                             <a href="' . route('menu.edit', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
-                            . (auth()->user()->role === 'admin' ? '
+                            . (in_array(auth()->user()->role, ['admin', 'Kepala Staf']) ? '
                             <form action="' . route('menu.destroy', $menu->id) . '" method="POST" class="d-inline">
                                 ' . csrf_field() . method_field('DELETE') . '
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
@@ -71,7 +71,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
             $kategories = Kategory::all();
             return view('menu.create', compact('kategories'));
         } else {
@@ -156,7 +156,7 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
 
-        if (auth()->user()->role === 'admin') {
+        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf')) {
             $request->validate([
                 'name' => 'string|max:255',
                 'harga' => 'numeric|min:0',
