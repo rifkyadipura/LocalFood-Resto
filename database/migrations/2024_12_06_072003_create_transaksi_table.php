@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('transaksi', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('transaksi_id');
             $table->string('kode_transaksi')->index();
             $table->unsignedBigInteger('menu_id');
             $table->integer('jumlah');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('metode_pembayaran', 50);
             $table->timestamps();
 
-            $table->foreign('menu_id')->references('id')->on('menu')->onDelete('cascade');
+            $table->foreign('menu_id')->references('menu_id')->on('menu')->onDelete('cascade');
         });
     }
 

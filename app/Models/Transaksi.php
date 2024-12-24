@@ -11,7 +11,7 @@ class Transaksi extends Model
     use HasFactory;
 
     protected $table = 'transaksi';
-
+    protected $primaryKey = 'transaksi_id';
     protected $fillable = [
         'kode_transaksi',
         'menu_id',
@@ -21,6 +21,9 @@ class Transaksi extends Model
         'uang_kembalian',
         'metode_pembayaran',
     ];
+
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     public static function generateKodeTransaksi()
     {
@@ -41,6 +44,6 @@ class Transaksi extends Model
      */
     public function menu()
     {
-        return $this->belongsTo(Menu::class, 'menu_id', 'id');
+        return $this->belongsTo(Menu::class, 'menu_id', 'menu_id');
     }
 }

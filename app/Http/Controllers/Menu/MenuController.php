@@ -31,13 +31,13 @@ class MenuController extends Controller
     public function getData()
     {
         $menu = Menu::with('kategori')
-                ->select(['id', 'name', 'harga', 'stok', 'status', 'kategory_id'])
-                ->orderBy('created_at', 'desc');
+                    ->select(['menu_id', 'nama_menu', 'harga', 'stok', 'status', 'kategory_id'])
+                    ->orderBy('created_at', 'desc');
 
         return DataTables::of($menu)
             ->addIndexColumn()
             ->addColumn('kategori', function ($menu) {
-                return $menu->kategori ? $menu->kategori->name : '-';
+                return $menu->kategori ? $menu->kategori->nama_kategory : '-';
             })
             ->addColumn('harga', function ($menu) {
                 return 'Rp ' . number_format($menu->harga, 0, ',', '.');
@@ -49,10 +49,10 @@ class MenuController extends Controller
             })
             ->addColumn('actions', function ($menu) {
                 return '<div class="text-center">
-                            <a href="' . route('menu.show', $menu->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
-                            <a href="' . route('menu.edit', $menu->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
+                            <a href="' . route('menu.show', $menu->menu_id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                            <a href="' . route('menu.edit', $menu->menu_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
                             . (in_array(auth()->user()->role, ['admin', 'Kepala Staf']) ? '
-                            <form action="' . route('menu.destroy', $menu->id) . '" method="POST" class="d-inline">
+                            <form action="' . route('menu.destroy', $menu->menu_id) . '" method="POST" class="d-inline">
                                 ' . csrf_field() . method_field('DELETE') . '
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
                                     <i class="fas fa-trash"></i> Hapus

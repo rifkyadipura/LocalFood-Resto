@@ -23,7 +23,7 @@
                     @foreach ($transaksis as $index => $transaksi)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $transaksi->menu->name }}</td>
+                            <td>{{ $transaksi->menu->nama_menu }}</td>
                             <td>{{ $transaksi->jumlah }}</td>
                             <td>Rp{{ number_format($transaksi->total_harga, 2) }}</td>
                         </tr>

@@ -14,14 +14,18 @@ class CreateMenuTable extends Migration
     public function up()
     {
         Schema::create('menu', function (Blueprint $table) {
-            $table->id(); // Primary key (auto-increment)
-            $table->string('name', 255); // Nama menu
+            $table->id('menu_id'); // Primary key diubah menjadi menu_id
+            $table->string('nama_menu', 255); // Mengubah name menjadi nama_menu
             $table->integer('stok'); // Stok menu
-            $table->boolean('status')->default(true); // Status menu (true = tersedia, false = tidak tersedia)
-            $table->string('foto')->nullable(); // Foto menu (path file gambar)
+            $table->boolean('status')->default(true); // Status menu
+            $table->string('foto')->nullable(); // Foto menu
             $table->text('deskripsi')->nullable(); // Deskripsi menu
-            $table->decimal('harga', 10, 2)->default(0); // Harga menu (2 desimal untuk representasi uang)
-            $table->timestamps(); // Kolom created_at dan updated_at
+            $table->decimal('harga', 10, 2)->default(0); // Harga menu
+            $table->unsignedBigInteger('kategory_id')->nullable(); // Foreign key ke tabel kategory
+            $table->timestamps();
+
+            // Tambahkan foreign key
+            $table->foreign('kategory_id')->references('kategory_id')->on('kategory')->onDelete('set null');
         });
     }
 

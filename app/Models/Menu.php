@@ -11,10 +11,11 @@ class Menu extends Model
 
     // Nama tabel (opsional jika nama tabel tidak sesuai dengan konvensi Laravel)
     protected $table = 'menu';
+    protected $primaryKey = 'menu_id';
 
     // Kolom yang dapat diisi menggunakan mass assignment
     protected $fillable = [
-        'name',
+        'nama_menu',
         'stok',
         'kategory_id',
         'status',
@@ -30,6 +31,6 @@ class Menu extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(\App\Models\Kategory::class, 'kategory_id');
+        return $this->belongsTo(Kategory::class, 'kategory_id', 'kategory_id');
     }
 }

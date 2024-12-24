@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\Transaksi;
+use Illuminate\Support\Facades\DB;
 
 class PemesananController extends Controller
 {
@@ -16,7 +17,8 @@ class PemesananController extends Controller
      */
     public function index()
     {
-        $menus = Menu::where('status', 1)->get();
+        $menus = Menu::select('menu_id', 'nama_menu', 'stok', 'status', 'harga', 'foto', 'deskripsi', 'kategory_id')
+                    ->where('status', 1)->get();
         return view('pemesanan.index', compact('menus'));
     }
 
@@ -37,12 +39,25 @@ class PemesananController extends Controller
 
     public function prosesPembayaran(Request $request)
     {
-        $cart = json_decode($request->input('cart'), true); // Decode cart JSON
-        $totalBayar = collect($cart)->sum('total'); // Hitung total harga
-        $uangDibayar = $request->input('uang_dibayar') ?? $totalBayar; // Default sesuai total bayar
-        $metode = $request->input('metode'); // Metode pembayaran
+        // Validasi Input
+        $request->validate([
+            'cart' => 'required|json', // Cart harus dalam format JSON
+            'uang_dibayar' => 'required|numeric|min:0',
+            'metode' => 'required|string|in:Cash,QRIS',
+        ]);
 
-        // Buat kode transaksi unik menggunakan model
+        // Decode cart JSON
+        $cart = json_decode($request->input('cart'), true);
+        if (!$cart || count($cart) === 0) {
+            return redirect()->back()->withErrors(['message' => 'Keranjang belanja kosong!']);
+        }
+
+        // Hitung total harga
+        $totalBayar = collect($cart)->sum('total');
+        $uangDibayar = $request->input('uang_dibayar') ?? $totalBayar;
+        $metode = $request->input('metode');
+
+        // Buat kode transaksi unik
         $kodeTransaksi = Transaksi::generateKodeTransaksi();
 
         // Validasi jika uang yang dibayar kurang
@@ -50,26 +65,56 @@ class PemesananController extends Controller
             return redirect()->back()->withErrors(['message' => 'Uang yang dibayarkan kurang!']);
         }
 
+        // Hitung uang kembalian
         $uangKembalian = $uangDibayar - $totalBayar;
 
-        foreach ($cart as $item) {
-            Transaksi::create([
-                'kode_transaksi' => $kodeTransaksi,
-                'menu_id' => $item['menu_id'],
-                'jumlah' => $item['quantity'],
-                'total_harga' => $item['total'],
-                'uang_dibayar' => $uangDibayar,
-                'uang_kembalian' => $uangKembalian,
-                'metode_pembayaran' => $metode,
-            ]);
+        try {
+            // Mulai transaksi database
+            DB::beginTransaction();
 
-            $menu = Menu::find($item['menu_id']);
-            if ($menu) {
+            foreach ($cart as $item) {
+                // Validasi menu_id dan cek stok
+                $menu = Menu::where('menu_id', $item['menu_id'])->first(); // Menggunakan menu_id
+                if (!$menu) {
+                    throw new \Exception('Menu dengan ID ' . $item['menu_id'] . ' tidak ditemukan!');
+                }
+
+                if ($menu->stok < $item['quantity']) {
+                    throw new \Exception('Stok menu ' . $menu->nama_menu . ' tidak mencukupi!');
+                }
+
+                // Simpan transaksi
+                Transaksi::create([
+                    'kode_transaksi' => $kodeTransaksi,
+                    'menu_id' => $menu->menu_id, // Menggunakan menu_id
+                    'jumlah' => $item['quantity'],
+                    'total_harga' => $item['total'],
+                    'uang_dibayar' => $uangDibayar,
+                    'uang_kembalian' => $uangKembalian,
+                    'metode_pembayaran' => $metode,
+                ]);
+
+                // Kurangi stok
                 $menu->stok -= $item['quantity'];
                 $menu->save();
             }
-        }
 
-        return view('pemesanan.struk', compact('kodeTransaksi', 'cart', 'totalBayar', 'uangDibayar', 'uangKembalian', 'metode'));
+            // Commit transaksi database
+            DB::commit();
+
+            // Tampilkan struk
+            return view('pemesanan.struk', compact(
+                'kodeTransaksi',
+                'cart',
+                'totalBayar',
+                'uangDibayar',
+                'uangKembalian',
+                'metode'
+            ));
+        } catch (\Exception $e) {
+            // Rollback jika terjadi error
+            DB::rollBack();
+            return redirect()->back()->withErrors(['message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 }

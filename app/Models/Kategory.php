@@ -11,10 +11,11 @@ class Kategory extends Model
 
     // Nama tabel di database
     protected $table = 'kategory';
+    protected $primaryKey = 'kategory_id';
 
     // Kolom yang bisa diisi (fillable) melalui mass assignment
     protected $fillable = [
-        'name',
+        'nama_kategory',
     ];
 
     /**

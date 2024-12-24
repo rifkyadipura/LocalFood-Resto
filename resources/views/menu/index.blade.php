@@ -54,7 +54,7 @@
             order: [[0, 'desc']],  // Mengurutkan berdasarkan kolom pertama (No) secara menurun
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
+                { data: 'nama_menu', name: 'nama_menu' },
                 { data: 'harga', name: 'harga' },
                 { data: 'stok', name: 'stok' },
                 { data: 'kategori', name: 'kategori', orderable: false, searchable: false },

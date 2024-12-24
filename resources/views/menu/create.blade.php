@@ -40,7 +40,7 @@
                     <select name="kategory_id" id="kategori" class="form-select" required>
                         <option value="" disabled selected>Pilih Kategori</option>
                         @foreach ($kategories as $kategori)
-                            <option value="{{ $kategori->id }}">{{ $kategori->name }}</option>
+                            <option value="{{ $kategori->kategory_id }}">{{ $kategori->nama_kategory }}</option>
                         @endforeach
                     </select>
                 </div>

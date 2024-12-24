@@ -17,8 +17,8 @@ class MenuSeeder extends Seeder
     {
         DB::table('menu')->insert([
             [
-                'id' => 1,
-                'name' => 'Soto Bandung',
+                'menu_id' => 1, // Mengubah id menjadi menu_id
+                'nama_menu' => 'Soto Bandung', // Mengubah name menjadi nama_menu
                 'harga' => 15000.00,
                 'stok' => 50,
                 'kategory_id' => 1,
@@ -29,8 +29,8 @@ class MenuSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ],
             [
-                'id' => 2,
-                'name' => 'Mie Kocok Bandung',
+                'menu_id' => 2, // Mengubah id menjadi menu_id
+                'nama_menu' => 'Mie Kocok Bandung', // Mengubah name menjadi nama_menu
                 'harga' => 10000.00,
                 'stok' => 45,
                 'kategory_id' => 1,

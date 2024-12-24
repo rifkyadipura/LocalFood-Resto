@@ -270,16 +270,16 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
                     <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
                     <p class="card-stock">Stok: {{ $menu->stok }}</p>
                     <p class="card-text">{{ $menu->deskripsi }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
                         placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
@@ -294,16 +294,16 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
                     <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
                     <p class="card-stock">Stok: {{ $menu->stok }}</p>
                     <p class="card-text">{{ $menu->deskripsi }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
                         placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
@@ -318,16 +318,16 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->name }}">
+                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->name }}</h5>
+                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
                     <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
                     <p class="card-stock">Stok: {{ $menu->stok }}</p>
                     <p class="card-text">{{ $menu->deskripsi }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
                         placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->name }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->id }}">
+                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>

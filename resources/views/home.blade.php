@@ -15,7 +15,7 @@
                         Hi, Selamat Datang {{ auth()->user()->name }}
                     </h1>
                     <p class="text-muted">
-                        Saat ini Anda berada di halaman Admin LocalFood.
+                        Saat ini Anda berada di halaman LocalFood.
                     </p>
                 </div>
             </div>
