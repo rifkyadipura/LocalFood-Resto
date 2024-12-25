@@ -20,15 +20,15 @@
                 </div>
             @endif
 
-            <form action="{{ route('menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('menu.update', $menu->menu_id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 {{-- Nama Menu (hanya untuk admin dan Kepala Staf) --}}
                 @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf'))
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama Menu</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ $menu->name }}" required>
+                    <label for="nama_menu" class="form-label">Nama Menu</label>
+                    <input type="text" name="nama_menu" id="nama_menu" class="form-control" value="{{ $menu->nama_menu }}" required>
                 </div>
 
                 {{-- Harga (hanya untuk admin dan Kepala Staf) --}}
@@ -52,8 +52,8 @@
                     <select name="kategory_id" id="kategori" class="form-select" required>
                         <option value="" disabled selected>Pilih Kategori</option>
                         @foreach ($kategories as $kategori)
-                            <option value="{{ $kategori->id }}" {{ $menu->kategory_id == $kategori->id ? 'selected' : '' }}>
-                                {{ $kategori->name }}
+                            <option value="{{ $kategori->kategory_id }}" {{ $menu->kategory_id == $kategori->kategory_id ? 'selected' : '' }}>
+                                {{ $kategori->nama_kategory }}
                             </option>
                         @endforeach
                     </select>
@@ -120,6 +120,57 @@
                 minimumFractionDigits: 0,
             }).format(number);
         }
+
+            // Validasi Status Berdasarkan Stok
+        const stokInput = document.getElementById('stok'); // Input stok
+        const statusSelect = document.getElementById('status'); // Dropdown status
+
+        // Fungsi untuk memeriksa stok dan memperbarui status
+        function updateStatusOptions() {
+            const stokValue = parseInt(stokInput.value) || 0; // Ambil nilai stok atau 0 jika kosong
+
+            if (isNaN(stokValue) || stokValue === 0) {
+                // Jika stok kosong atau tidak valid, paksa status "Tidak Tersedia"
+                statusSelect.value = "0"; // Set "Tidak Tersedia"
+                statusSelect.querySelector('option[value="1"]').disabled = true; // Disable "Tersedia"
+                statusSelect.querySelector('option[value="0"]').disabled = false; // Aktifkan "Tidak Tersedia"
+            } else {
+                // Jika stok lebih dari 0, paksa status "Tersedia"
+                statusSelect.value = "1"; // Set "Tersedia"
+                statusSelect.querySelector('option[value="0"]').disabled = true; // Disable "Tidak Tersedia"
+                statusSelect.querySelector('option[value="1"]').disabled = false; // Aktifkan "Tersedia"
+            }
+
+            // Jika input kosong (belum diisi), kedua opsi status dinonaktifkan
+            if (stokInput.value === '') {
+                statusSelect.value = ''; // Reset pilihan status
+                statusSelect.querySelector('option[value="0"]').disabled = true;
+                statusSelect.querySelector('option[value="1"]').disabled = true;
+            }
+        }
+
+        // Panggil fungsi saat stok berubah
+        stokInput.addEventListener('input', updateStatusOptions);
+
+        // Jalankan saat halaman dimuat (untuk nilai default)
+        updateStatusOptions();
+
+        // Validasi sebelum submit form
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const stokValue = parseInt(stokInput.value) || 0;
+            const statusValue = statusSelect.value;
+
+            if (stokInput.value === '') {
+                e.preventDefault();
+                alert('Harap isi stok terlebih dahulu sebelum menyimpan.');
+                return;
+            }
+
+            if (stokValue === 0 && statusValue == "1") {
+                e.preventDefault();
+                alert('Status "Tersedia" tidak boleh dipilih jika stok kosong.');
+            }
+        });
     });
 </script>
 @endsection

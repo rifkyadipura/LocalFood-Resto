@@ -17,11 +17,13 @@ class Menu extends Model
     protected $fillable = [
         'nama_menu',
         'stok',
-        'kategory_id',
         'status',
         'foto',
         'deskripsi',
         'harga',
+        'kategory_id',
+        'dibuat_oleh',
+        'diperbarui_oleh',
     ];
 
     // Tipe data kolom tertentu (opsional)
@@ -32,5 +34,15 @@ class Menu extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategory::class, 'kategory_id', 'kategory_id');
+    }
+
+    public function pembuat()
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh', 'users_id');
+    }
+
+    public function pengupdate()
+    {
+        return $this->belongsTo(User::class, 'diperbarui_oleh', 'users_id');
     }
 }

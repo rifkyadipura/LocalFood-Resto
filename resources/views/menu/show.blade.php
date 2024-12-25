@@ -14,7 +14,9 @@
                 <div class="col-md-4 text-center">
                     <!-- Foto Menu -->
                     @if ($menu->foto)
-                        <img src="{{ asset($menu->foto) }}" alt="Foto {{ $menu->name }}" class="img-thumbnail mb-3" width="100%">
+                        <a href="{{ asset($menu->foto) }}" target="_blank">
+                            <img src="{{ asset($menu->foto) }}" alt="Foto {{ $menu->nama_menu }}" class="img-thumbnail mb-3" width="100%">
+                        </a>
                     @else
                         <p class="text-muted">Foto tidak tersedia</p>
                     @endif
@@ -25,7 +27,7 @@
                         <tbody>
                             <tr>
                                 <th>Nama</th>
-                                <td>{{ $menu->name }}</td>
+                                <td>{{ $menu->nama_menu }}</td>
                             </tr>
                             <tr>
                                 <th>Harga</th>
@@ -52,6 +54,22 @@
                             <tr>
                                 <th>Deskripsi</th>
                                 <td>{{ $menu->deskripsi ?? 'Tidak ada deskripsi' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dibuat Oleh</th>
+                                <td>{{ $menu->pembuat ? $menu->pembuat->nama_lengkap : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Diperbarui Oleh</th>
+                                <td>{{ $menu->pengupdate ? $menu->pengupdate->nama_lengkap : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dibuat Pada</th>
+                                <td>{{ $menu->created_at->format('d-m-Y H:i') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Diperbarui Pada</th>
+                                <td>{{ $menu->updated_at->format('d-m-Y H:i') }}</td>
                             </tr>
                         </tbody>
                     </table>

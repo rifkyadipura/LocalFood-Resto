@@ -91,7 +91,7 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama_menu' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'status' => 'required|boolean',
@@ -102,19 +102,21 @@ class MenuController extends Controller
         $filePath = null;
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
+            $fileName = preg_replace('/\s+/', '_', $request->nama_menu) . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/menu'), $fileName);
             $filePath = 'uploads/menu/' . $fileName;
         }
 
         Menu::create([
-            'name' => $request->name,
+            'nama_menu' => $request->nama_menu,
             'harga' => $request->harga,
             'stok' => $request->stok,
             'kategory_id' => $request->kategory_id,
             'status' => $request->status,
             'foto' => $filePath,
             'deskripsi' => $request->deskripsi,
+            'dibuat_oleh' => Auth::user()->users_id,
+            'diperbarui_oleh' => Auth::user()->users_id,
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan!');
@@ -128,7 +130,7 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu = Menu::findOrFail($id);
+        $menu = Menu::with(['pembuat', 'pengupdate'])->findOrFail($id);
         return view('menu.show', compact('menu'));
     }
 
@@ -158,7 +160,7 @@ class MenuController extends Controller
 
         if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf')) {
             $request->validate([
-                'name' => 'string|max:255',
+                'nama_menu' => 'string|max:255',
                 'harga' => 'numeric|min:0',
                 'stok' => 'required|integer|min:0',
                 'status' => 'boolean',
@@ -168,7 +170,7 @@ class MenuController extends Controller
 
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
-                $fileName = preg_replace('/\s+/', '_', $request->name) . '.' . $file->getClientOriginalExtension();
+                $fileName = preg_replace('/\s+/', '_', $request->nama_menu) . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/menu'), $fileName);
                 $filePath = 'uploads/menu/' . $fileName;
 
@@ -182,13 +184,14 @@ class MenuController extends Controller
             }
 
             $menu->update([
-                'name' => $request->name,
+                'nama_menu' => $request->nama_menu,
                 'harga' => $request->harga,
                 'stok' => $request->stok,
                 'kategory_id' => $request->kategory_id,
                 'status' => $request->status,
                 'deskripsi' => $request->deskripsi,
                 'foto' => $menu->foto ?? null,
+                'diperbarui_oleh' => Auth::user()->users_id,
             ]);
         } elseif (auth()->user()->role === 'Kasir') {
             $request->validate([
@@ -197,6 +200,7 @@ class MenuController extends Controller
 
             $menu->update([
                 'stok' => $request->stok,
+                'diperbarui_oleh' => Auth::user()->users_id,
             ]);
         } else {
             abort(403, 'Unauthorized action.');

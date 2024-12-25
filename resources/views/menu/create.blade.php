@@ -23,8 +23,8 @@
             <form action="{{ route('menu.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama Menu</label>
-                    <input type="text" name="name" id="name" class="form-control" placeholder="Masukkan nama menu" required>
+                    <label for="nama_menu" class="form-label">Nama Menu</label>
+                    <input type="text" name="nama_menu" id="nama_menu" class="form-control" placeholder="Masukkan nama menu" required>
                 </div>
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
@@ -83,6 +83,39 @@
         this.value = formattedValue;
         // Simpan nilai asli ke input tersembunyi
         harga.value = value;
+    });
+
+    // Validasi Status Berdasarkan Stok
+    const stokInput = document.getElementById('stok'); // Input stok
+    const statusSelect = document.getElementById('status'); // Dropdown status
+
+    // Event saat stok diubah
+    stokInput.addEventListener('input', function () {
+        const stokValue = parseInt(this.value); // Ambil nilai stok sebagai angka
+
+        if (stokValue > 0) {
+            // Jika stok lebih dari 0, ubah status ke "Tersedia" dan disable "Tidak Tersedia"
+            statusSelect.value = "1"; // Paksa ke "Tersedia"
+            statusSelect.querySelector('option[value="0"]').disabled = true; // Disable "Tidak Tersedia"
+            statusSelect.querySelector('option[value="1"]').disabled = false; // Aktifkan "Tersedia"
+        } else {
+            // Jika stok kosong (0), ubah status ke "Tidak Tersedia" dan disable "Tersedia"
+            statusSelect.value = "0"; // Paksa ke "Tidak Tersedia"
+            statusSelect.querySelector('option[value="1"]').disabled = true; // Disable "Tersedia"
+            statusSelect.querySelector('option[value="0"]').disabled = false; // Aktifkan "Tidak Tersedia"
+        }
+    });
+
+    // Validasi sebelum submit form
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const stokValue = parseInt(stokInput.value); // Ambil nilai stok
+        const statusValue = statusSelect.value; // Ambil nilai status
+
+        // Cek apakah stok 0 tetapi status "Tersedia" dipilih
+        if (stokValue == 0 && statusValue == "1") {
+            e.preventDefault(); // Batalkan submit form
+            alert('Status "Tersedia" tidak boleh dipilih jika stok kosong.');
+        }
     });
 </script>
 
