@@ -34,24 +34,31 @@ class UsersController extends Controller
 
     public function getData()
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
-            $users = User::select(['users_id', 'nama_lengkap', 'email', 'role', 'created_at'])
-                ->orderBy('users_id', 'desc');
+        if (Auth::check()) {
+            $user = Auth::user();
+            $query = User::select(['users_id', 'nama_lengkap', 'email', 'role', 'created_at']);
+            if ($user->role === 'Kepala Staf') {
+                $query->where('role', '!=', 'admin');
+            }
+            $users = $query->orderBy('users_id', 'desc');
 
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($user) {
-                    return '<a href="' . route('users.edit', $user->users_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
-                            <form action="' . route('users.destroy', $user->users_id) . '" method="POST" style="display:inline-block;">
-                                ' . csrf_field() . method_field('DELETE') . '
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
-                            </form>';
+                    $editButton = '<a href="' . route('users.edit', $user->users_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>';
+                    $deleteButton = '<form action="' . route('users.destroy', $user->users_id) . '" method="POST" style="display:inline-block;">
+                                        ' . csrf_field() . method_field('DELETE') . '
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
+                                    </form>';
+
+                    return $editButton . ' ' . $deleteButton;
                 })
                 ->addColumn('role', function ($user) {
                     return $user->role;
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
+
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
