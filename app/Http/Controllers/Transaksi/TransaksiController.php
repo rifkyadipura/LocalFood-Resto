@@ -95,10 +95,11 @@ class TransaksiController extends Controller
     public function show($kode_transaksi)
     {
         if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
-            $transaksis = Transaksi::with('menu')
+            $transaksis = Transaksi::with(['menu', 'user'])
                 ->where('kode_transaksi', $kode_transaksi)
                 ->get();
-            return view('transaksi.detail', compact('transaksis', 'kode_transaksi'));
+            $kasir = $transaksis->first()->user->nama_lengkap ?? 'Tidak Diketahui';
+            return view('transaksi.detail', compact('transaksis', 'kode_transaksi', 'kasir'));
         } else {
             $title = "Akses Ditolak";
             $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";

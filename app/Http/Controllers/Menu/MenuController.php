@@ -188,7 +188,7 @@ class MenuController extends Controller
                 'harga' => $request->harga,
                 'stok' => $request->stok,
                 'kategory_id' => $request->kategory_id,
-                'status' => $request->status,
+                'status' => ($request->stok > 0) ? 1 : 0,
                 'deskripsi' => $request->deskripsi,
                 'foto' => $menu->foto ?? null,
                 'diperbarui_oleh' => Auth::user()->users_id,
@@ -200,6 +200,7 @@ class MenuController extends Controller
 
             $menu->update([
                 'stok' => $request->stok,
+                'status' => ($request->stok > 0) ? 1 : 0,
                 'diperbarui_oleh' => Auth::user()->users_id,
             ]);
         } else {

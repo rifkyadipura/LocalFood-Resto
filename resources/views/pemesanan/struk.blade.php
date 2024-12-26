@@ -27,6 +27,7 @@
                 <table class="table table-bordered">
                     <thead class="table-primary">
                         <tr>
+                            <th>No</th>
                             <th>Nama</th>
                             <th>Jumlah</th>
                             <th>Harga</th>
@@ -36,6 +37,7 @@
                     <tbody>
                         @foreach ($cart as $item)
                         <tr>
+                            <td>{{ $loop->iteration }}
                             <td>{{ $item['name'] }}</td>
                             <td>{{ $item['quantity'] }}</td>
                             <td>Rp {{ number_format($item['price'], 2, ',', '.') }}</td>
@@ -45,23 +47,23 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Total Bayar:</strong></td>
+                            <td colspan="4" class="text-end"><strong>Total Bayar:</strong></td>
                             <td>Rp {{ number_format($totalBayar, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Uang Dibayar:</strong></td>
+                            <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
                             <td>Rp {{ number_format($uangDibayar, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Uang Kembalian:</strong></td>
+                            <td colspan="4" class="text-end"><strong>Uang Kembalian:</strong></td>
                             <td>Rp {{ number_format($uangKembalian, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Metode Pembayaran:</strong></td>
+                            <td colspan="4" class="text-end"><strong>Metode Pembayaran:</strong></td>
                             <td><strong>{{ $metode }}</strong></td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Kasir:</strong></td>
+                            <td colspan="4" class="text-end"><strong>Kasir:</strong></td>
                             <td><strong>{{ $kasir }}</strong></td>
                         </tr>
                     </tfoot>

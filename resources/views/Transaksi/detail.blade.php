@@ -20,9 +20,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($transaksis as $index => $transaksi)
+                    @foreach ($transaksis as $transaksi)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $loop->iteration }}
                             <td>{{ $transaksi->menu->nama_menu }}</td>
                             <td>{{ $transaksi->jumlah }}</td>
                             <td>Rp{{ number_format($transaksi->total_harga, 2) }}</td>
@@ -41,6 +41,10 @@
                     <tr>
                         <td colspan="3" class="text-end"><strong>Metode Pembayaran:</strong></td>
                         <td><strong>{{ $transaksis->first()->metode_pembayaran }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Kasir:</strong></td>
+                        <td><strong>{{ $kasir }}</strong></td>
                     </tr>
                 </tfoot>
             </table>

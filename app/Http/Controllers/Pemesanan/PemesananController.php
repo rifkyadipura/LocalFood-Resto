@@ -18,8 +18,7 @@ class PemesananController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $menus = Menu::select('menu_id', 'nama_menu', 'stok', 'status', 'harga', 'foto', 'deskripsi', 'kategory_id')
-                        ->where('status', 1)->get();
+            $menus = Menu::all();
             return view('pemesanan.index', compact('menus'));
         } else {
             return redirect()->route('login')->withErrors(['message' => 'Silakan login terlebih dahulu untuk mengakses halaman ini!']);
@@ -101,6 +100,9 @@ class PemesananController extends Controller
 
                 // Kurangi stok
                 $menu->stok -= $item['quantity'];
+                if ($menu->stok <= 0) {
+                    $menu->status = 0;
+                }
                 $menu->save();
             }
 
