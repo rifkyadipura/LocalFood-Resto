@@ -60,6 +60,10 @@
                             <td colspan="3" class="text-end"><strong>Metode Pembayaran:</strong></td>
                             <td><strong>{{ $metode }}</strong></td>
                         </tr>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Kasir:</strong></td>
+                            <td><strong>{{ $kasir }}</strong></td>
+                        </tr>
                     </tfoot>
                 </table>
             </div>

@@ -181,11 +181,14 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Menu</a>
+                        <a class="nav-link" href="#">PEMESANAN</a>
                     </li>
                 </ul>
             </div>
             <div class="d-flex align-items-center">
+                <a href="{{ route('home') }}" class="menu-button ms-3">
+                    <i class="fas fa-home me-1"></i> Kembali
+                </a>
                 <a href="#" class="menu-button" id="menuIcon">
                     Orders <span id="orderBadge" class="ms-2 text-success fw-bold"></span>
                 </a>

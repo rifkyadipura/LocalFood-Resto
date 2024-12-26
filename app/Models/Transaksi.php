@@ -15,6 +15,7 @@ class Transaksi extends Model
     protected $fillable = [
         'kode_transaksi',
         'menu_id',
+        'users_id',
         'jumlah',
         'total_harga',
         'uang_dibayar',
@@ -45,5 +46,13 @@ class Transaksi extends Model
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'menu_id', 'menu_id');
+    }
+
+    /**
+     * Relasi ke model Users
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id', 'users_id');
     }
 }

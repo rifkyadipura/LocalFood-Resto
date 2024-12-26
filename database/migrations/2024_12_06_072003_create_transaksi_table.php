@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigIncrements('transaksi_id');
             $table->string('kode_transaksi')->index();
             $table->unsignedBigInteger('menu_id');
+            $table->unsignedBigInteger('users_id')->nullable();
             $table->integer('jumlah');
             $table->decimal('total_harga', 10, 2);
             $table->decimal('uang_dibayar', 10, 2);
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('menu_id')->references('menu_id')->on('menu')->onDelete('cascade');
+            $table->foreign('users_id')->references('users_id')->on('users')->onDelete('set null');
         });
     }
 

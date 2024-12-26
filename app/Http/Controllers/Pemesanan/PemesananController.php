@@ -17,9 +17,13 @@ class PemesananController extends Controller
      */
     public function index()
     {
-        $menus = Menu::select('menu_id', 'nama_menu', 'stok', 'status', 'harga', 'foto', 'deskripsi', 'kategory_id')
-                    ->where('status', 1)->get();
-        return view('pemesanan.index', compact('menus'));
+        if (auth()->check()) {
+            $menus = Menu::select('menu_id', 'nama_menu', 'stok', 'status', 'harga', 'foto', 'deskripsi', 'kategory_id')
+                        ->where('status', 1)->get();
+            return view('pemesanan.index', compact('menus'));
+        } else {
+            return redirect()->route('login')->withErrors(['message' => 'Silakan login terlebih dahulu untuk mengakses halaman ini!']);
+        }
     }
 
     public function pilihMetode(Request $request)
@@ -87,6 +91,7 @@ class PemesananController extends Controller
                 Transaksi::create([
                     'kode_transaksi' => $kodeTransaksi,
                     'menu_id' => $menu->menu_id, // Menggunakan menu_id
+                    'users_id' => auth()->user()->users_id,
                     'jumlah' => $item['quantity'],
                     'total_harga' => $item['total'],
                     'uang_dibayar' => $uangDibayar,
@@ -103,13 +108,15 @@ class PemesananController extends Controller
             DB::commit();
 
             // Tampilkan struk
+            $kasir = auth()->user()->nama_lengkap ?? 'Tidak Diketahui';
             return view('pemesanan.struk', compact(
                 'kodeTransaksi',
                 'cart',
                 'totalBayar',
                 'uangDibayar',
                 'uangKembalian',
-                'metode'
+                'metode',
+                'kasir'
             ));
         } catch (\Exception $e) {
             // Rollback jika terjadi error
