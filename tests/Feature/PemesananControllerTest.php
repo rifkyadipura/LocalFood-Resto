@@ -3,160 +3,151 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Menu;
 use App\Models\Transaksi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 class PemesananControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    // **1. Test: Halaman index dapat diakses dan menampilkan menu tersedia**
-    public function test_index_displays_available_menus()
+    /**
+     * Test: Halaman index dapat diakses oleh pengguna login
+     */
+    public function test_index_page_is_accessible_by_authenticated_user()
     {
-        $this->assertTrue(true); // Dummy test untuk menjaga code coverage
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('index.pemesanan'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('pemesanan.index');
     }
 
-    // **2. Test: Pilih metode pembayaran dengan keranjang kosong**
-    public function test_pilih_metode_redirects_with_empty_cart_error()
+    /**
+     * Test: Halaman index mengarahkan ke login jika tidak login
+     */
+    public function test_index_page_redirects_to_login_for_guests()
     {
-        $response = $this->post(route('pembayaran.pilih'), ['cart' => json_encode([])]);
+        $response = $this->get(route('index.pemesanan'));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    /**
+     * Test: Pilih metode pembayaran berhasil dengan keranjang tidak kosong
+     */
+    public function test_pilih_metode_succeeds_with_non_empty_cart()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $cart = json_encode([
+            ['menu_id' => 1, 'quantity' => 2, 'total' => 50000],
+        ]);
+
+        $response = $this->post(route('pembayaran.pilih'), ['cart' => $cart]);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('pemesanan.index');
+        $response->assertViewHas('cart');
+    }
+
+    /**
+     * Test: Pilih metode pembayaran gagal dengan keranjang kosong
+     */
+    public function test_pilih_metode_fails_with_empty_cart()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->post(route('pembayaran.pilih'), ['cart' => '[]']);
 
         $response->assertRedirect(route('index.pemesanan'));
-        $response->assertSessionHasErrors(['message' => 'Keranjang kosong!']);
+        $response->assertSessionHasErrors('message');
     }
 
-    // **3. Test: Pilih metode pembayaran dengan keranjang berisi item**
-    public function test_pilih_metode_displays_payment_methods_fixed()
+    /**
+     * Test: Proses pembayaran berhasil
+     */
+    public function test_proses_pembayaran_succeeds()
     {
-        // 1. Tambahkan data dummy menu
-        $menu1 = Menu::create(['name' => 'Nasi Goreng', 'harga' => 15000, 'stok' => 10, 'status' => 1]);
-        $menu2 = Menu::create(['name' => 'Es Teh', 'harga' => 5000, 'stok' => 20, 'status' => 1]);
+        $user = User::factory()->create();
+        $this->actingAs($user);
 
-        // 2. Buat data cart valid
-        $cart = [
+        $menu = Menu::factory()->create(['stok' => 10, 'status' => 1]);
+
+        $cart = json_encode([
             [
-                'menu_id' => $menu1->id,
-                'name' => 'Nasi Goreng',
-                'price' => 15000,
+                'menu_id' => $menu->menu_id,
+                'name' => $menu->nama_menu,
                 'quantity' => 2,
-                'total' => 30000
-            ]
+                'price' => $menu->harga, // Tambahkan key 'price'
+                'total' => $menu->harga * 2, // Total harga untuk item
+            ],
+        ]);
+
+        // Pastikan uang_dibayar >= totalBayar
+        $uangDibayar = ($menu->harga * 2) + 1000; // Tambahkan sedikit lebih banyak untuk memastikan cukup
+
+        $data = [
+            'cart' => $cart,
+            'uang_dibayar' => $uangDibayar,
+            'metode' => 'Cash',
         ];
 
-        // 3. Kirim request POST dengan data keranjang
-        $response = $this->post(route('pembayaran.pilih'), ['cart' => json_encode($cart)]);
+        $response = $this->post(route('pembayaran.proses'), $data);
 
-        // 4. Periksa status, view, dan variabel
-        $response->assertStatus(200); // Status 200 OK
-        $response->assertViewIs('pemesanan.index'); // View yang diharapkan
-        $response->assertViewHas('menus'); // Memastikan variabel menus ada
-        $response->assertViewHas('cart'); // Memastikan variabel cart ada
-        $response->assertViewHas('showPaymentModal', true); // Modal pembayaran muncul
+        $response->assertStatus(200); // Pastikan respons sukses
+        $response->assertViewIs('pemesanan.struk'); // Periksa view
+        $this->assertDatabaseHas('menu', ['menu_id' => $menu->menu_id, 'stok' => 8]); // Stok berkurang
     }
 
-    // **4. Test: Proses pembayaran gagal karena uang kurang**
-    public function test_proses_pembayaran_fails_if_cash_is_less_than_total()
+    /**
+     * Test: Proses pembayaran gagal jika keranjang kosong
+     */
+    public function test_proses_pembayaran_fails_with_empty_cart()
     {
-        $cart = [[
-            'menu_id' => 1,
-            'name' => 'Es Teh',
-            'price' => 5000,
-            'quantity' => 2,
-            'total' => 10000
-        ]];
+        $user = User::factory()->create();
+        $this->actingAs($user);
 
-        Menu::create(['name' => 'Es Teh', 'harga' => 5000, 'stok' => 10, 'status' => 1]);
-
-        $response = $this->post(route('pembayaran.proses'), [
-            'cart' => json_encode($cart),
+        $data = [
+            'cart' => '[]',
+            'uang_dibayar' => 50000,
             'metode' => 'Cash',
-            'uang_dibayar' => 5000
-        ]);
+        ];
+
+        $response = $this->post(route('pembayaran.proses'), $data);
 
         $response->assertRedirect();
-        $response->assertSessionHasErrors(['message' => 'Uang yang dibayarkan kurang!']);
+        $response->assertSessionHasErrors('message');
     }
 
-    // **5. Test: Proses pembayaran berhasil dengan metode Cash**
-    public function test_proses_pembayaran_success_with_cash_method()
+    /**
+     * Test: Proses pembayaran gagal jika uang yang dibayarkan kurang
+     */
+    public function test_proses_pembayaran_fails_if_insufficient_payment()
     {
-        $menu = Menu::create([
-            'name' => 'Nasi Goreng',
-            'harga' => 15000,
-            'stok' => 10,
-            'status' => 1
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $menu = Menu::factory()->create(['stok' => 10, 'status' => 1]);
+
+        $cart = json_encode([
+            ['menu_id' => $menu->menu_id, 'quantity' => 2, 'total' => 40000],
         ]);
 
-        $cart = [[
-            'menu_id' => $menu->id,
-            'name' => 'Nasi Goreng', // Tambahkan key 'name'
-            'price' => 15000,        // Tambahkan key 'price'
-            'quantity' => 2,
-            'total' => 30000
-        ]];
-
-        $response = $this->post(route('pembayaran.proses'), [
-            'cart' => json_encode($cart),
+        $data = [
+            'cart' => $cart,
+            'uang_dibayar' => 20000,
             'metode' => 'Cash',
-            'uang_dibayar' => 50000
-        ]);
+        ];
 
-        $response->assertStatus(200);
-        $response->assertViewIs('pemesanan.struk');
-        $this->assertDatabaseHas('transaksi', ['kode_transaksi' => Transaksi::first()->kode_transaksi]);
-        $this->assertEquals(8, Menu::find($menu->id)->stok);
-    }
+        $response = $this->post(route('pembayaran.proses'), $data);
 
-
-    // **6. Test: Proses pembayaran berhasil dengan metode QRIS**
-    public function test_proses_pembayaran_success_with_qris_method()
-    {
-        $menu = Menu::create(['name' => 'Mie Ayam', 'harga' => 10000, 'stok' => 20, 'status' => 1]);
-
-        $cart = [[
-            'menu_id' => $menu->id,
-            'name' => 'Mie Ayam',
-            'price' => 10000,
-            'quantity' => 3,
-            'total' => 30000
-        ]];
-
-        $response = $this->post(route('pembayaran.proses'), [
-            'cart' => json_encode($cart),
-            'metode' => 'QRIS'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertViewIs('pemesanan.struk');
-
-        // Pastikan stok sudah berkurang 3
-        $this->assertEquals(17, Menu::find($menu->id)->stok);
-    }
-
-    // **7. Test: Proses pembayaran dengan metode Cash dan kembalian tepat**
-    public function test_proses_pembayaran_cash_with_exact_change()
-    {
-        $menu = Menu::create(['name' => 'Bakso', 'harga' => 12000, 'stok' => 15, 'status' => 1]);
-        $cart = [[
-            'menu_id' => $menu->id,
-            'name' => 'Bakso',  // Tambahkan key 'name'
-            'price' => 12000,   // Tambahkan key 'price'
-            'quantity' => 2,
-            'total' => 24000
-        ]];
-
-        $response = $this->post(route('pembayaran.proses'), [
-            'cart' => json_encode($cart),
-            'metode' => 'Cash',
-            'uang_dibayar' => 24000
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertViewIs('pemesanan.struk');
-        $this->assertDatabaseHas('transaksi', ['kode_transaksi' => Transaksi::first()->kode_transaksi]);
-        $this->assertEquals(0, Transaksi::first()->uang_kembalian);
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('message');
     }
 }

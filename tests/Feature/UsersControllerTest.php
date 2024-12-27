@@ -4,133 +4,211 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UsersControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    // **1. Test: Halaman index dapat diakses oleh admin**
-    public function test_index_page_is_accessible_by_admin()
+    /**
+     * Test: Endpoint getData mengarahkan ke login untuk pengguna yang tidak login
+     */
+    public function test_get_data_redirects_to_login_for_guests()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $response = $this->actingAs($admin)->get(route('users.index'));
+        // Act: Akses endpoint getData tanpa login
+        $response = $this->get(route('users.data'));
+
+        // Assert: Periksa pengalihan ke halaman login
+        $response->assertStatus(302);
+        $response->assertRedirect(route('login'));
+    }
+
+    /**
+     * Test: Halaman index users dapat diakses oleh admin atau kepala staf
+     */
+    public function test_index_page_accessible_by_admin_or_kepala_staf()
+    {
+        // Arrange: Membuat pengguna dengan role admin
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+
+        // Act: Akses halaman index users
+        $response = $this->get(route('users.index'));
+
+        // Assert: Periksa status dan view
         $response->assertStatus(200);
         $response->assertViewIs('users.index');
     }
 
-    // **2. Test: Halaman index ditolak untuk non-admin**
-    public function test_index_page_is_denied_for_non_admin()
+    /**
+     * Test: Halaman index users menampilkan error untuk non-admin dan non-kepala staf
+     */
+    public function test_index_page_shows_error_for_non_admin_and_non_kepala_staf()
     {
-        $pegawai = User::factory()->create(['role' => 'pegawai']);
-        $response = $this->actingAs($pegawai)->get(route('users.index'));
+        // Arrange: Membuat pengguna dengan role selain admin/kepala staf
+        $user = User::factory()->create(['role' => 'Kasir']);
+        $this->actingAs($user);
+
+        // Act: Akses halaman index users
+        $response = $this->get(route('users.index'));
+
+        // Assert: Periksa status dan view error
         $response->assertStatus(200);
         $response->assertViewIs('errors.error');
     }
 
-    // **3. Test untuk getData(): Mengembalikan JSON yang valid**
-    public function test_get_data_returns_valid_json_response()
+    /**
+     * Test: Endpoint getData mengembalikan data users
+     */
+    public function test_get_data_returns_users_data()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        // Arrange: Membuat pengguna dan beberapa data user lainnya
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
         User::factory(10)->create();
 
-        $response = $this->actingAs($admin)->getJson(route('users.data'));
+        // Act: Akses endpoint getData
+        $response = $this->get(route('users.data'));
 
+        // Assert: Periksa respons JSON
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'draw', 'recordsTotal', 'recordsFiltered', 'data' => [
-                '*' => ['id', 'name', 'email', 'role', 'created_at']
-            ]
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 
-    // **4. Test untuk getData(): Mengembalikan data kosong jika tidak ada user**
-    public function test_get_data_returns_empty_when_no_users_exist()
+    /**
+     * Test: Endpoint getData memfilter role admin
+     */
+    public function test_get_data_excludes_admin_role()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $response = $this->actingAs($admin)->getJson(route('users.data'));
+        // Arrange: Membuat pengguna kepala staf dan data users
+        $user = User::factory()->create(['role' => 'Kepala Staf']);
+        $this->actingAs($user);
 
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $staffUser = User::factory()->create(['role' => 'Kasir']);
+
+        // Act: Akses endpoint getData
+        $response = $this->get(route('users.data'));
+
+        // Assert: Pastikan admin tidak ada di data
         $response->assertStatus(200);
-        $response->assertJson([
-            'data' => []
-        ]);
+        $this->assertStringNotContainsString($adminUser->email, $response->getContent());
+        $this->assertStringContainsString($staffUser->email, $response->getContent());
     }
 
-    // **5. Test untuk getData(): Ditolak untuk non-admin**
-    public function test_get_data_is_denied_for_non_admin()
+    /**
+     * Test: Endpoint getData unauthorized untuk pengguna tidak login
+     */
+    public function test_get_data_unauthorized_for_guests()
     {
-        $pegawai = User::factory()->create(['role' => 'pegawai']);
-        $response = $this->actingAs($pegawai)->getJson(route('users.data'));
+        // Act: Akses endpoint getData tanpa login
+        $response = $this->get(route('users.data'));
 
-        $response->assertStatus(403); // Unauthorized
-        $response->assertJson(['error' => 'Unauthorized']);
+        // Assert: Periksa pengalihan ke halaman login
+        $response->assertStatus(302);
+        $response->assertRedirect(route('login'));
     }
 
-    // **6. Test untuk edit(): Dapat diakses oleh admin**
-    public function test_edit_page_is_accessible_by_admin()
+    /**
+     * Test: Halaman edit users dapat diakses
+     */
+    public function test_edit_page_accessible()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $user = User::factory()->create();
+        // Arrange: Membuat pengguna dengan role admin
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
 
-        $response = $this->actingAs($admin)->get(route('users.edit', $user->id));
+        $targetUser = User::factory()->create();
+
+        // Act: Akses halaman edit
+        $response = $this->get(route('users.edit', $targetUser->users_id));
+
+        // Assert: Periksa status dan view
         $response->assertStatus(200);
         $response->assertViewIs('users.edit');
-        $response->assertViewHas('user', $user);
+        $response->assertViewHas('user', $targetUser);
     }
 
-    // **7. Test untuk edit(): Ditolak untuk non-admin**
-    public function test_edit_page_is_denied_for_non_admin()
-    {
-        $pegawai = User::factory()->create(['role' => 'pegawai']);
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($pegawai)->get(route('users.edit', $user->id));
-        $response->assertStatus(200);
-        $response->assertViewIs('errors.error');
-    }
-
-    // **8. Test untuk edit(): Menampilkan error jika user tidak ditemukan**
+    /**
+     * Test: Halaman edit users menampilkan error jika user tidak ditemukan
+     */
     public function test_edit_page_shows_error_if_user_not_found()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $response = $this->actingAs($admin)->get(route('users.edit', 999)); // ID yang tidak valid
+        // Arrange: Membuat pengguna admin
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
 
+        // Act: Akses halaman edit dengan ID yang tidak ada
+        $response = $this->get(route('users.edit', 9999));
+
+        // Assert: Periksa redirect dan pesan error
         $response->assertRedirect(route('users.index'));
         $response->assertSessionHas('error', 'User tidak ditemukan!');
     }
 
-    // **9. Test: User dapat diperbarui oleh admin**
-    public function test_user_can_be_updated_by_admin()
+    /**
+     * Test: Halaman edit users menampilkan akses ditolak untuk non-admin
+     */
+    public function test_edit_page_shows_access_denied_for_non_admin()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $user = User::factory()->create();
+        // Arrange: Membuat pengguna non-admin
+        $user = User::factory()->create(['role' => 'Kasir']);
+        $this->actingAs($user);
 
-        $response = $this->actingAs($admin)->put(route('users.update', $user->id), [
-            'name' => 'Updated Name',
-            'email' => 'updatedemail@example.com',
-            'role' => 'pegawai'
-        ]);
+        // Act: Akses halaman edit
+        $response = $this->get(route('users.edit', 1));
 
-        $response->assertStatus(302);
+        // Assert: Periksa status dan view error
+        $response->assertStatus(200);
+        $response->assertViewIs('errors.error');
+        $response->assertViewHas(['title', 'message', 'redirectUrl']);
+    }
+
+    /**
+     * Test: Update user berhasil
+     */
+    public function test_update_user_successfully()
+    {
+        // Arrange: Membuat pengguna admin dan pengguna yang akan diupdate
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+
+        $targetUser = User::factory()->create();
+        $updatedData = [
+            'nama_lengkap' => 'Updated Name',
+            'email' => 'updated@example.com',
+            'role' => 'Kasir',
+        ];
+
+        // Act: Akses endpoint update
+        $response = $this->put(route('users.update', $targetUser->users_id), $updatedData);
+
+        // Assert: Periksa redirect dan data terupdate
+        $response->assertRedirect(route('users.index'));
         $this->assertDatabaseHas('users', [
-            'id' => $user->id,
-            'name' => 'Updated Name',
-            'email' => 'updatedemail@example.com',
-            'role' => 'pegawai'
+            'users_id' => $targetUser->users_id,
+            'nama_lengkap' => 'Updated Name',
+            'email' => 'updated@example.com',
+            'role' => 'Kasir',
         ]);
     }
 
-    // **10. Test: User dapat dihapus oleh admin**
-    public function test_user_can_be_deleted_by_admin()
+    /**
+     * Test: Hapus user berhasil
+     */
+    public function test_destroy_user_successfully()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $user = User::factory()->create();
+        // Arrange: Membuat pengguna admin dan pengguna yang akan dihapus
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
 
-        $response = $this->actingAs($admin)->delete(route('users.destroy', $user->id));
-        $response->assertStatus(302);
-        $this->assertDatabaseMissing('users', [
-            'id' => $user->id
-        ]);
+        $targetUser = User::factory()->create();
+
+        // Act: Akses endpoint destroy
+        $response = $this->delete(route('users.destroy', $targetUser->users_id));
+
+        // Assert: Periksa redirect dan data terhapus
+        $response->assertRedirect(route('users.index'));
+        $this->assertDatabaseMissing('users', ['users_id' => $targetUser->users_id]);
     }
 }

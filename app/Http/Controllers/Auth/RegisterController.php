@@ -30,11 +30,17 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if ($request->user() && !in_array($request->user()->role, ['admin', 'Kepala Staf'])) {
-                abort(403, 'Unauthorized access');
+            $user = $request->user();
+            if (!$user) {
+                return redirect('/login');
             }
+
+            if (!in_array($user->role, ['admin', 'Kepala Staf'])) {
+                return abort(403, 'Unauthorized access');
+            }
+
             return $next($request);
-        })->except(['showRegistrationForm', 'register']);
+        })->only(['showRegistrationForm', 'register']);
     }
 
     /**
