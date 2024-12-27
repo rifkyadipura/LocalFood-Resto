@@ -517,6 +517,15 @@
 
         // Proses pembayaran cash
         document.getElementById('submitCashPayment').addEventListener('click', function () {
+            // Ambil nilai input uang dibayar
+            const uangDibayarInput = document.getElementById('uangDibayar').value.trim();
+
+            // Validasi apakah input kosong
+            if (uangDibayarInput === "") {
+                alert('Input uang yang dibayar kosong! Harap isi terlebih dahulu.');
+                return;
+            }
+
             const totalBayar = parseFloat(
                 document.getElementById('totalBayar').innerText.replace(/[^,\d]/g, "")
             ); // Total bayar tanpa format Rupiah
