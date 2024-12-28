@@ -24,7 +24,7 @@ Route::get('/', [PemesananController::class, 'index'])->name('index.pemesanan');
 Route::post('/pilih-metode', [PemesananController::class, 'pilihMetode'])->name('pembayaran.pilih');
 Route::post('/proses-pembayaran', [PemesananController::class, 'prosesPembayaran'])->name('pembayaran.proses');
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
