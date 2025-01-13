@@ -6,6 +6,18 @@
     <title>LocalFood Resto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        [id^="makanan-"],
+        #minuman {
+            scroll-margin-top: 70px;
+        }
+
         .menu-button {
             font-size: 1rem;
             color: white;
@@ -35,7 +47,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1001;
+            z-index: 1050;
             max-width: 500px;
             width: 100%;
         }
@@ -181,7 +193,13 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">PEMESANAN</a>
+                        <a class="nav-link" href="#makanan-berat">Makanan Berat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#makanan-ringan">Makanan Ringan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#minuman">Minuman</a>
                     </li>
                 </ul>
             </div>
@@ -267,7 +285,7 @@
     <!-- Section Cards -->
     <div class="container mt-5">
     <!-- Tampilkan kategori Makanan Berat -->
-    <h3 class="text-primary">Makanan Berat</h3>
+    <h3 id="makanan-berat" class="text-primary">Makanan Berat</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach($menus->where('kategory_id', 1) as $menu)
         <div class="col">
@@ -291,7 +309,7 @@
     </div>
 
     <!-- Tampilkan kategori Makanan Ringan -->
-    <h3 class="text-primary mt-5">Makanan Ringan</h3>
+    <h3 id="makanan-ringan" class="text-primary mt-5">Makanan Ringan</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach($menus->where('kategory_id', 2) as $menu)
         <div class="col">
@@ -315,7 +333,7 @@
     </div>
 
     <!-- Tampilkan kategori Minuman -->
-    <h3 class="text-primary mt-5">Minuman</h3>
+    <h3 id="minuman" class="text-primary mt-5">Minuman</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach($menus->where('kategory_id', 3) as $menu)
         <div class="col">
