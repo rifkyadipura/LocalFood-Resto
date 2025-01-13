@@ -8,6 +8,8 @@ use App\Models\Transaksi;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -63,6 +65,50 @@ class TransaksiController extends Controller
             })
             ->rawColumns(['actions'])
             ->make(true);
+    }
+
+    public function getReportingData(Request $request)
+    {
+        try {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+            // Query dengan ROLLUP
+            $menus = DB::table('transaksi')
+                ->join('menu', 'transaksi.menu_id', '=', 'menu.menu_id')
+                ->selectRaw('menu.nama_menu,
+                             SUM(transaksi.jumlah) AS jumlah_terjual,
+                             CAST(SUM(transaksi.total_harga) AS UNSIGNED) AS total_harga')
+                ->whereBetween('transaksi.created_at', [$startDate, $endDate])
+                ->groupByRaw('menu.nama_menu WITH ROLLUP')
+                ->get();
+
+            // Pisahkan data dan total keseluruhan
+            $totalKeseluruhan = null;
+            $data = [];
+
+            foreach ($menus as $menu) {
+                if (is_null($menu->nama_menu)) {
+                    $totalKeseluruhan = $menu; // Baris total keseluruhan
+                } else {
+                    $data[] = $menu; // Baris data menu
+                }
+            }
+
+            // Cari menu terlaris dan tersedikit
+            $menuTerlaris = collect($data)->sortByDesc('jumlah_terjual')->first();
+            $menuTersedikit = collect($data)->sortBy('jumlah_terjual')->first();
+
+            return response()->json([
+                'data' => $data,
+                'total_keseluruhan' => $totalKeseluruhan,
+                'menu_terlaris' => $menuTerlaris,
+                'menu_tersedikit' => $menuTersedikit,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getReportingData: ' . $e->getMessage());
+            return response()->json(['error' => 'Terjadi kesalahan pada server.'], 500);
+        }
     }
 
     public function show($kode_transaksi)

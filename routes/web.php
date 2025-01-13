@@ -7,7 +7,6 @@ use App\Http\Controllers\Users\UsersController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Pemesanan\PemesananController;
 use App\Http\Controllers\Transaksi\TransaksiController;
-use App\Http\Controllers\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +44,5 @@ Route::delete('/menu/delete/{id}', [MenuController::class, 'destroy'])->name('me
 
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
 Route::get('/transaksi/data', [TransaksiController::class, 'getData'])->name('transaksi.data');
+Route::get('/transaksi/reporting', [TransaksiController::class, 'getReportingData'])->name('transaksi.reporting');
 Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
