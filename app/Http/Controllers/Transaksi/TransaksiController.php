@@ -70,30 +70,55 @@ class TransaksiController extends Controller
     public function getReportingData(Request $request)
     {
         try {
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
-            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            // Log untuk debugging
+            // Log::info('Filter tanggal:', [
+            //     'start_date' => $request->start_date,
+            //     'end_date' => $request->end_date,
+            // ]);
 
-            // Query dengan ROLLUP
+            // Filter tanggal
+            $startDate = Carbon::parse($request->start_date ?? now())->startOfDay();
+            $endDate = Carbon::parse($request->end_date ?? now())->endOfDay();
+
+            // Query dengan ROLLUP untuk mendapatkan data menu terjual
             $menus = DB::table('transaksi')
                 ->join('menu', 'transaksi.menu_id', '=', 'menu.menu_id')
                 ->selectRaw('menu.nama_menu,
-                             SUM(transaksi.jumlah) AS jumlah_terjual,
-                             CAST(SUM(transaksi.total_harga) AS UNSIGNED) AS total_harga')
+                            SUM(transaksi.jumlah) AS jumlah_terjual,
+                            CAST(SUM(transaksi.total_harga) AS UNSIGNED) AS total_harga')
                 ->whereBetween('transaksi.created_at', [$startDate, $endDate])
                 ->groupByRaw('menu.nama_menu WITH ROLLUP')
                 ->get();
 
-            // Pisahkan data dan total keseluruhan
+            // Debug hasil query dengan ROLLUP
+            Log::info('Hasil query ROLLUP:', ['menus' => $menus]);
+
+            // Pisahkan data menu terjual dan total keseluruhan
             $totalKeseluruhan = null;
             $data = [];
-
             foreach ($menus as $menu) {
                 if (is_null($menu->nama_menu)) {
-                    $totalKeseluruhan = $menu; // Baris total keseluruhan
+                    $totalKeseluruhan = $menu;
                 } else {
-                    $data[] = $menu; // Baris data menu
+                    $data[] = $menu;
                 }
             }
+
+            // Query menu yang belum pernah terjual pada tanggal yang difilter
+            $unboughtMenus = DB::table('menu')
+                ->leftJoin('transaksi', function ($join) use ($startDate, $endDate) {
+                    $join->on('menu.menu_id', '=', 'transaksi.menu_id')
+                        ->whereBetween('transaksi.created_at', [$startDate, $endDate]);
+                })
+                ->leftJoin('kategory', 'menu.kategory_id', '=', 'kategory.kategory_id')
+                ->select('menu.nama_menu', 'kategory.nama_kategory')
+                ->whereNull('transaksi.transaksi_id')
+                ->orderBy('kategory.nama_kategory')
+                ->get()
+                ->groupBy('nama_kategory');
+
+            // Debug hasil query untuk menu yang belum pernah terjual
+            // Log::info('Menu belum terjual:', ['unboughtMenus' => $unboughtMenus]);
 
             // Cari menu terlaris dan tersedikit
             $menuTerlaris = collect($data)->sortByDesc('jumlah_terjual')->first();
@@ -104,6 +129,7 @@ class TransaksiController extends Controller
                 'total_keseluruhan' => $totalKeseluruhan,
                 'menu_terlaris' => $menuTerlaris,
                 'menu_tersedikit' => $menuTersedikit,
+                'menu_belum_terjual' => $unboughtMenus,
             ]);
         } catch (\Exception $e) {
             Log::error('Error in getReportingData: ' . $e->getMessage());
