@@ -130,7 +130,8 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu = Menu::with(['pembuat', 'pengupdate'])->findOrFail($id);
+        $menu = Menu::with(['pembuat', 'pengupdate', 'kategori'])->findOrFail($id);
+        $menu->nama_kategory = $menu->kategori->nama_kategory ?? 'Tidak ada kategori';
         return view('menu.show', compact('menu'));
     }
 

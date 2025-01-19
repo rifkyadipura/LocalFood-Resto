@@ -39,7 +39,7 @@
                             </tr>
                             <tr>
                                 <th>Kategori</th>
-                                <td>{{ $menu->kategori->name ?? 'Tidak ada kategori' }}</td>
+                                <td>{{ $menu->kategori->nama_kategory ?? 'Tidak ada kategori' }}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>

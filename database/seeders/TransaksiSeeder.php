@@ -32,6 +32,9 @@ class TransaksiSeeder extends Seeder
             ['menu_id' => 14, 'harga' => 10000.00], // Teh Tarik
         ];
 
+        // Pecahan uang rupiah yang tersedia
+        $availableBills = [1000, 2000, 5000, 10000, 20000, 50000, 75000, 100000];
+
         // Loop untuk membuat data harian dari 1 Januari hingga 18 Januari 2025
         for ($i = 0; $i < 18; $i++) { // Perpanjangan hingga 18 hari
             $dailyMenus = collect($allMenus)->shuffle()->take(rand(5, 8)); // Pilih menu acak antara 5 hingga 8 setiap hari
@@ -42,7 +45,22 @@ class TransaksiSeeder extends Seeder
             foreach ($dailyMenus as $menu) {
                 $jumlah = rand(1, 3); // Jumlah menu yang dibeli
                 $totalHarga = $menu['harga'] * $jumlah;
-                $uangDibayar = $totalHarga + rand(1000, 5000); // Uang yang dibayar lebih besar sedikit dari total harga
+
+                // Tentukan metode pembayaran secara acak
+                $metodePembayaran = rand(0, 1) ? 'QRIS' : 'Cash';
+
+                if ($metodePembayaran === 'QRIS') {
+                    $uangDibayar = $totalHarga; // QRIS uangnya pas
+                    $uangKembalian = 0; // Tidak ada kembalian
+                } else {
+                    // Pilih uangDibayar secara acak, pastikan cukup untuk membayar totalHarga
+                    $uangDibayar = collect($availableBills)
+                        ->filter(fn($bill) => $bill >= $totalHarga) // Ambil hanya pecahan yang cukup
+                        ->random(); // Pilih salah satu secara acak
+
+                    $uangKembalian = $uangDibayar - $totalHarga;
+                }
+
                 $transactions[] = [
                     'transaksi_id' => count($transactions) + 1,
                     'kode_transaksi' => 'TRX-' . $date->format('Ymd') . '-' . $dailyTransactionCount,
@@ -51,8 +69,8 @@ class TransaksiSeeder extends Seeder
                     'jumlah' => $jumlah,
                     'total_harga' => $totalHarga,
                     'uang_dibayar' => $uangDibayar,
-                    'uang_kembalian' => $uangDibayar - $totalHarga,
-                    'metode_pembayaran' => rand(0, 1) ? 'QRIS' : 'Cash',
+                    'uang_kembalian' => $uangKembalian,
+                    'metode_pembayaran' => $metodePembayaran,
                     'created_at' => $dailyTime->format('Y-m-d H:i:s'),
                     'updated_at' => $dailyTime->format('Y-m-d H:i:s'),
                 ];
