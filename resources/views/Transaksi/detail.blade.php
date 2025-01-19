@@ -14,7 +14,8 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Menu</th>
+                        <th>Nama Menu</th>
+                        <th>Harga Satuan</th>
                         <th>Jumlah</th>
                         <th>Total Harga</th>
                     </tr>
@@ -22,8 +23,9 @@
                 <tbody>
                     @foreach ($transaksis as $transaksi)
                         <tr>
-                            <td>{{ $loop->iteration }}
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $transaksi->menu->nama_menu }}</td>
+                            <td>Rp{{ number_format($transaksi->menu->harga, 2) }}</td>
                             <td>{{ $transaksi->jumlah }}</td>
                             <td>Rp{{ number_format($transaksi->total_harga, 2) }}</td>
                         </tr>
@@ -31,19 +33,19 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" class="text-end"><strong>Uang Dibayar:</strong></td>
+                        <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
                         <td>Rp{{ number_format($transaksis->first()->uang_dibayar, 2) }}</td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-end"><strong>Uang Kembalian:</strong></td>
+                        <td colspan="4" class="text-end"><strong>Uang Kembalian:</strong></td>
                         <td>Rp{{ number_format($transaksis->first()->uang_kembalian, 2) }}</td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-end"><strong>Metode Pembayaran:</strong></td>
+                        <td colspan="4" class="text-end"><strong>Metode Pembayaran:</strong></td>
                         <td><strong>{{ $transaksis->first()->metode_pembayaran }}</strong></td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-end"><strong>Kasir:</strong></td>
+                        <td colspan="4" class="text-end"><strong>Kasir:</strong></td>
                         <td><strong>{{ $kasir }}</strong></td>
                     </tr>
                 </tfoot>

@@ -28,10 +28,10 @@
                     <thead class="table-primary">
                         <tr>
                             <th>No</th>
-                            <th>Nama</th>
+                            <th>Nama Menu</th>
+                            <th>Harga Satuan</th>
                             <th>Jumlah</th>
-                            <th>Harga</th>
-                            <th>Total</th>
+                            <th>Total Harga</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,8 +39,8 @@
                         <tr>
                             <td>{{ $loop->iteration }}
                             <td>{{ $item['name'] }}</td>
-                            <td>{{ $item['quantity'] }}</td>
                             <td>Rp {{ number_format($item['price'], 2, ',', '.') }}</td>
+                            <td>{{ $item['quantity'] }}</td>
                             <td>Rp {{ number_format($item['total'], 2, ',', '.') }}</td>
                         </tr>
                         @endforeach
