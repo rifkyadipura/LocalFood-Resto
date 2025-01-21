@@ -19,6 +19,7 @@ class Transaksi extends Model
         'jumlah',
         'total_harga',
         'uang_dibayar',
+        'total_harga_pajak',
         'uang_kembalian',
         'metode_pembayaran',
     ];

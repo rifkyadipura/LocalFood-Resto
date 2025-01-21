@@ -417,7 +417,7 @@
                 return;
             }
 
-            let totalAmount = 0;
+            let subtotal = 0;
 
             cart.forEach((item, index) => {
                 const itemRow = document.createElement('div');
@@ -428,28 +428,46 @@
                     <span class="remove-item" data-index="${index}">&times;</span>
                 `;
                 cartItems.appendChild(itemRow);
-                totalAmount += item.total;
+                subtotal += item.total;
             });
 
-            totalPayment.textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+            // Hitung pajak restoran (10%)
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
 
-            // Tambahkan event listener untuk menghapus item
-            cartItems.querySelectorAll('.remove-item').forEach(button => {
+            // Tampilkan subtotal, pajak, dan total bayar
+            const summaryRow = document.createElement('div');
+            summaryRow.innerHTML = `
+                <div style="margin-left: -6px;"> <!-- Atur margin kiri -->
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="text-start">Subtotal:</td>
+                                <td class="text-end" style="padding-right: 29px;">Rp ${subtotal.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-start">Pajak Restoran (10%):</td>
+                                <td class="text-end" style="padding-right: 29px;">Rp ${tax.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td class="text-start">Total:</td>
+                                <td class="text-end" style="padding-right: 29px;">Rp ${total.toLocaleString('id-ID')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            cartItems.appendChild(summaryRow);
+
+            totalPayment.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+
+            // Tambahkan event listener untuk tombol hapus
+            document.querySelectorAll('.remove-item').forEach(button => {
                 button.addEventListener('click', function () {
-                    const itemIndex = parseInt(this.getAttribute('data-index'));
-
-                    // Kembalikan stok ke jumlah awal
-                    const removedItem = cart[itemIndex];
-                    const stockElement = document.querySelector(`.menu-quantity[data-id="${removedItem.menu_id}"]`).parentElement.querySelector('.card-stock');
-                    const currentStock = parseInt(stockElement.textContent.split(': ')[1]);
-                    stockElement.textContent = `Stok: ${currentStock + removedItem.quantity}`;
-
-                    // Hapus item dari keranjang
-                    cart.splice(itemIndex, 1);
-
-                    // Perbarui keranjang dan jumlah item di badge
-                    updateCartModal();
-                    document.getElementById('orderBadge').textContent = cart.length;
+                    const index = parseInt(this.getAttribute('data-index'));
+                    cart.splice(index, 1); // Hapus item dari array cart
+                    updateCartModal(); // Perbarui modal setelah penghapusan
+                    document.getElementById('orderBadge').textContent = cart.length; // Perbarui badge jumlah pesanan
                 });
             });
         }
@@ -501,13 +519,13 @@
 
         // Untuk memilih Cash
         document.getElementById('payWithCash').addEventListener('click', function () {
-            // Tampilkan modal cash
-            document.getElementById('paymentMethodModal').style.display = 'none';
-            document.getElementById('cashPaymentModal').style.display = 'block';
+            const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
 
-            // Tampilkan total bayar
-            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
-            document.getElementById('totalBayar').textContent = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+            document.getElementById('totalBayar').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('cashPaymentModal').style.display = 'block';
+            document.getElementById('paymentMethodModal').style.display = 'none';
         });
 
         // Fungsi untuk memformat angka ke Rupiah
@@ -535,21 +553,8 @@
 
         // Proses pembayaran cash
         document.getElementById('submitCashPayment').addEventListener('click', function () {
-            // Ambil nilai input uang dibayar
-            const uangDibayarInput = document.getElementById('uangDibayar').value.trim();
-
-            // Validasi apakah input kosong
-            if (uangDibayarInput === "") {
-                alert('Input uang yang dibayar kosong! Harap isi terlebih dahulu.');
-                return;
-            }
-
-            const totalBayar = parseFloat(
-                document.getElementById('totalBayar').innerText.replace(/[^,\d]/g, "")
-            ); // Total bayar tanpa format Rupiah
-            const uangDibayar = parseFloat(
-                document.getElementById('uangDibayar').value.replace(/[^,\d]/g, "")
-            ); // Uang dibayar tanpa format Rupiah
+            const totalBayar = parseFloat(document.getElementById('totalBayar').textContent.replace(/[^\d]/g, ""));
+            const uangDibayar = parseFloat(document.getElementById('uangDibayar').value.replace(/[^\d]/g, ""));
 
             if (uangDibayar < totalBayar) {
                 alert('Uang yang dibayarkan kurang!');
@@ -558,6 +563,7 @@
 
             const kembalian = uangDibayar - totalBayar;
 
+            // Kirim data ke server
             submitPayment('Cash', uangDibayar, kembalian);
         });
 
@@ -566,20 +572,19 @@
 
         // Untuk memilih QRIS
         document.getElementById('payWithQris').addEventListener('click', function () {
-            // Tampilkan modal QRIS
-            document.getElementById('paymentMethodModal').style.display = 'none';
-            document.getElementById('qrisPaymentModal').style.display = 'block';
+            const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
 
-            // Perbarui total bayar di modal QRIS
-            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
-            document.getElementById('totalBayarQris').textContent = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+            document.getElementById('totalBayarQris').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('qrisPaymentModal').style.display = 'block';
+            document.getElementById('paymentMethodModal').style.display = 'none';
         });
 
-        // Konfirmasi pembayaran QRIS
         document.getElementById('confirmQrisPayment').addEventListener('click', function () {
-            const totalBayar = cart.reduce((sum, item) => sum + item.total, 0);
+            const totalBayar = parseFloat(document.getElementById('totalBayarQris').textContent.replace(/[^\d]/g, ""));
 
-            // QRIS: uang_dibayar sama dengan total bayar, tidak ada kembalian
+            // QRIS tidak ada kembalian
             submitPayment('QRIS', totalBayar, 0);
         });
 
@@ -592,15 +597,32 @@
             document.getElementById('modalOverlay').style.display = 'none';
         }
 
+        // Event untuk menutup modal saat overlay diklik
+        document.getElementById('modalOverlay').addEventListener('click', function () {
+            closePaymentModal(); // Panggil fungsi untuk menutup modal
+        });
+
+        // Event untuk tombol close di setiap modal
+        document.querySelectorAll('.modal-close, .modal-close-payment').forEach(button => {
+            button.addEventListener('click', closePaymentModal);
+        });
+
         // Function untuk submit data pembayaran
         function submitPayment(method, uangDibayar = 0, uangKembalian = 0) {
             try {
+                const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+                const tax = subtotal * 0.1;
+                const total = subtotal + tax;
+
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/proses-pembayaran'; // Endpoint untuk memproses pembayaran
                 form.innerHTML = `
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="cart" value='${JSON.stringify(cart)}'>
+                    <input type="hidden" name="subtotal" value="${subtotal}">
+                    <input type="hidden" name="tax" value="${tax}">
+                    <input type="hidden" name="total_harga_pajak" value="${total}">
                     <input type="hidden" name="metode" value="${method}">
                     <input type="hidden" name="uang_dibayar" value="${uangDibayar}">
                     <input type="hidden" name="uang_kembalian" value="${uangKembalian}">

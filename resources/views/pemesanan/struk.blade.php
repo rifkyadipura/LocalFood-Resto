@@ -37,7 +37,7 @@
                     <tbody>
                         @foreach ($cart as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $item['name'] }}</td>
                             <td>Rp {{ number_format($item['price'], 2, ',', '.') }}</td>
                             <td>{{ $item['quantity'] }}</td>
@@ -47,8 +47,16 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" class="text-end"><strong>Total Bayar:</strong></td>
-                            <td>Rp {{ number_format($totalBayar, 2, ',', '.') }}</td>
+                            <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                            <td>Rp {{ number_format($subtotal, 2, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Pajak (10%):</strong></td>
+                            <td>Rp {{ number_format($tax, 2, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Total Bayar (Setelah Pajak):</strong></td>
+                            <td>Rp {{ number_format($total_harga_pajak, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
@@ -61,10 +69,6 @@
                         <tr>
                             <td colspan="4" class="text-end"><strong>Metode Pembayaran:</strong></td>
                             <td><strong>{{ $metode }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" class="text-end"><strong>Kasir:</strong></td>
-                            <td><strong>{{ $kasir }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>

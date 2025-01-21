@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('users_id')->nullable();
             $table->integer('jumlah');
             $table->decimal('total_harga', 10, 2);
+            $table->decimal('total_harga_pajak', 10, 2)->nullable();
             $table->decimal('uang_dibayar', 10, 2);
             $table->decimal('uang_kembalian', 10, 2);
             $table->string('metode_pembayaran', 50);

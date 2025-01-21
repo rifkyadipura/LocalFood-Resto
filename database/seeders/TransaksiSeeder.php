@@ -46,19 +46,23 @@ class TransaksiSeeder extends Seeder
                 $jumlah = rand(1, 3); // Jumlah menu yang dibeli
                 $totalHarga = $menu['harga'] * $jumlah;
 
+                // Hitung pajak (10%) dan total harga setelah pajak
+                $tax = $totalHarga * 0.1;
+                $totalHargaPajak = $totalHarga + $tax;
+
                 // Tentukan metode pembayaran secara acak
                 $metodePembayaran = rand(0, 1) ? 'QRIS' : 'Cash';
 
                 if ($metodePembayaran === 'QRIS') {
-                    $uangDibayar = $totalHarga; // QRIS uangnya pas
+                    $uangDibayar = $totalHargaPajak; // QRIS uangnya pas
                     $uangKembalian = 0; // Tidak ada kembalian
                 } else {
-                    // Pilih uangDibayar secara acak, pastikan cukup untuk membayar totalHarga
+                    // Pilih uangDibayar secara acak, pastikan cukup untuk membayar totalHargaPajak
                     $uangDibayar = collect($availableBills)
-                        ->filter(fn($bill) => $bill >= $totalHarga) // Ambil hanya pecahan yang cukup
+                        ->filter(fn($bill) => $bill >= $totalHargaPajak) // Ambil hanya pecahan yang cukup
                         ->random(); // Pilih salah satu secara acak
 
-                    $uangKembalian = $uangDibayar - $totalHarga;
+                    $uangKembalian = $uangDibayar - $totalHargaPajak;
                 }
 
                 $transactions[] = [
@@ -68,6 +72,7 @@ class TransaksiSeeder extends Seeder
                     'users_id' => 3,
                     'jumlah' => $jumlah,
                     'total_harga' => $totalHarga,
+                    'total_harga_pajak' => $totalHargaPajak,
                     'uang_dibayar' => $uangDibayar,
                     'uang_kembalian' => $uangKembalian,
                     'metode_pembayaran' => $metodePembayaran,

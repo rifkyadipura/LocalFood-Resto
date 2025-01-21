@@ -21,6 +21,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $subtotal = 0;
+                    @endphp
                     @foreach ($transaksis as $transaksi)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
@@ -29,9 +32,28 @@
                             <td>{{ $transaksi->jumlah }}</td>
                             <td>Rp{{ number_format($transaksi->total_harga, 2) }}</td>
                         </tr>
+                        @php
+                            $subtotal += $transaksi->total_harga;
+                        @endphp
                     @endforeach
                 </tbody>
                 <tfoot>
+                    @php
+                        $tax = $subtotal * 0.1;
+                        $total_harga_pajak = $subtotal + $tax;
+                    @endphp
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                        <td>Rp{{ number_format($subtotal, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Pajak (10%):</strong></td>
+                        <td>Rp{{ number_format($tax, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Total Harga Setelah Pajak:</strong></td>
+                        <td>Rp{{ number_format($total_harga_pajak, 2) }}</td>
+                    </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
                         <td>Rp{{ number_format($transaksis->first()->uang_dibayar, 2) }}</td>
