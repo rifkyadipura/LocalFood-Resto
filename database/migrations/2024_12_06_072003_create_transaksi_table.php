@@ -17,17 +17,17 @@ return new class extends Migration
             $table->bigIncrements('transaksi_id');
             $table->string('kode_transaksi')->index();
             $table->unsignedBigInteger('menu_id');
-            $table->unsignedBigInteger('users_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->integer('jumlah');
             $table->decimal('total_harga', 10, 2);
-            $table->decimal('total_harga_pajak', 10, 2)->nullable();
+            $table->decimal('total_harga_pajak', 10, 2);
             $table->decimal('uang_dibayar', 10, 2);
             $table->decimal('uang_kembalian', 10, 2);
             $table->string('metode_pembayaran', 50);
             $table->timestamps();
 
             $table->foreign('menu_id')->references('menu_id')->on('menu')->onDelete('cascade');
-            $table->foreign('users_id')->references('users_id')->on('users')->onDelete('set null');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('set null');
         });
     }
 

@@ -69,7 +69,7 @@ class TransaksiSeeder extends Seeder
                     'transaksi_id' => count($transactions) + 1,
                     'kode_transaksi' => 'TRX-' . $date->format('Ymd') . '-' . $dailyTransactionCount,
                     'menu_id' => $menu['menu_id'],
-                    'users_id' => 3,
+                    'user_id' => 3,
                     'jumlah' => $jumlah,
                     'total_harga' => $totalHarga,
                     'total_harga_pajak' => $totalHargaPajak,

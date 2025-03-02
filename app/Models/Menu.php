@@ -38,11 +38,11 @@ class Menu extends Model
 
     public function pembuat()
     {
-        return $this->belongsTo(User::class, 'dibuat_oleh', 'users_id');
+        return $this->belongsTo(User::class, 'dibuat_oleh', 'user_id');
     }
 
     public function pengupdate()
     {
-        return $this->belongsTo(User::class, 'diperbarui_oleh', 'users_id');
+        return $this->belongsTo(User::class, 'diperbarui_oleh', 'user_id');
     }
 }

@@ -28,8 +28,8 @@ class CreateMenuTable extends Migration
 
             // Tambahkan foreign key
             $table->foreign('kategory_id')->references('kategory_id')->on('kategory')->onDelete('set null');
-            $table->foreign('dibuat_oleh')->references('users_id')->on('users')->onDelete('set null');
-            $table->foreign('diperbarui_oleh')->references('users_id')->on('users')->onDelete('set null');
+            $table->foreign('dibuat_oleh')->references('user_id')->on('users')->onDelete('set null');
+            $table->foreign('diperbarui_oleh')->references('user_id')->on('users')->onDelete('set null');
         });
     }
 

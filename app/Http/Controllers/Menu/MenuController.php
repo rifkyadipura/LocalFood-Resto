@@ -194,7 +194,7 @@ class MenuController extends Controller
                 'foto' => $menu->foto ?? null,
                 'diperbarui_oleh' => Auth::user()->users_id,
             ]);
-        } elseif (auth()->user()->role === 'Kasir') {
+        } elseif (auth()->user()->role === 'Cashier') {
             $request->validate([
                 'stok' => 'required|integer|min:0',
             ]);
@@ -202,7 +202,7 @@ class MenuController extends Controller
             $menu->update([
                 'stok' => $request->stok,
                 'status' => ($request->stok > 0) ? 1 : 0,
-                'diperbarui_oleh' => Auth::user()->users_id,
+                'diperbarui_oleh' => Auth::user()->user_id,
             ]);
         } else {
             abort(403, 'Unauthorized action.');

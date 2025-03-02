@@ -80,7 +80,7 @@ class PemesananController extends Controller
                 Transaksi::create([
                     'kode_transaksi' => $kodeTransaksi,
                     'menu_id' => $menu->menu_id,
-                    'users_id' => auth()->user()->users_id,
+                    'user_id' => auth()->user()->user_id,
                     'jumlah' => $item['quantity'],
                     'total_harga' => $item['total'], // Harga sebelum pajak
                     'total_harga_pajak' => $item['total'] + ($item['total'] * 0.1), // Harga setelah pajak

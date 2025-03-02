@@ -97,12 +97,12 @@
                             <a class="nav-link text-dark font-semibold" href="{{ route('transaksi.index') }}">Transaksi</a>
                         </li>
                     @endif
-                    @if (in_array(auth()->user()->role, ['admin', 'Kepala Staf', 'Kasir']))
+                    @if (in_array(auth()->user()->role, ['admin', 'Kepala Staf', 'Cashier']))
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('menu.index') }}">Menu</a>
                         </li>
                     @endif
-                    @if (auth()->user()->role === 'Kasir')
+                    @if (auth()->user()->role === 'Cashier')
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('index.pemesanan') }}">Pemesanan</a>
                         </li>
@@ -126,7 +126,7 @@
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->nama_lengkap }}
+                                    {{ Auth::user()->full_name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

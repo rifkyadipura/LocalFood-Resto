@@ -57,11 +57,11 @@
                             </tr>
                             <tr>
                                 <th>Dibuat Oleh</th>
-                                <td>{{ $menu->pembuat ? $menu->pembuat->nama_lengkap : '-' }}</td>
+                                <td>{{ $menu->pembuat ? $menu->pembuat->full_name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Diperbarui Oleh</th>
-                                <td>{{ $menu->pengupdate ? $menu->pengupdate->nama_lengkap : '-' }}</td>
+                                <td>{{ $menu->pengupdate ? $menu->pengupdate->full_name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Dibuat Pada</th>

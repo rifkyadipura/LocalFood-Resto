@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Menentukan primary key baru
-    protected $primaryKey = 'users_id';
+    protected $primaryKey = 'user_id';
 
     // Jika primary key adalah auto-increment
     public $incrementing = true;
@@ -27,7 +27,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'nama_lengkap',
+        'full_name',
         'email',
         'password',
         'role',
