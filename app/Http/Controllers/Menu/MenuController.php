@@ -51,7 +51,7 @@ class MenuController extends Controller
                 return '<div class="text-center">
                             <a href="' . route('menu.show', $menu->menu_id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
                             <a href="' . route('menu.edit', $menu->menu_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
-                            . (in_array(auth()->user()->role, ['admin', 'Kepala Staf']) ? '
+                            . (in_array(auth()->user()->role, ['admin', 'Head Staff']) ? '
                             <form action="' . route('menu.destroy', $menu->menu_id) . '" method="POST" class="d-inline">
                                 ' . csrf_field() . method_field('DELETE') . '
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
@@ -71,7 +71,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
             $kategories = Kategory::all();
             return view('menu.create', compact('kategories'));
         } else {
@@ -115,8 +115,8 @@ class MenuController extends Controller
             'status' => $request->status,
             'foto' => $filePath,
             'deskripsi' => $request->deskripsi,
-            'dibuat_oleh' => Auth::user()->users_id,
-            'diperbarui_oleh' => Auth::user()->users_id,
+            'dibuat_oleh' => Auth::user()->user_id,
+            'diperbarui_oleh' => Auth::user()->user_id,
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan!');
@@ -159,7 +159,7 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
 
-        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Kepala Staf')) {
+        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff')) {
             $request->validate([
                 'nama_menu' => 'string|max:255',
                 'harga' => 'numeric|min:0',
@@ -192,7 +192,7 @@ class MenuController extends Controller
                 'status' => ($request->stok > 0) ? 1 : 0,
                 'deskripsi' => $request->deskripsi,
                 'foto' => $menu->foto ?? null,
-                'diperbarui_oleh' => Auth::user()->users_id,
+                'diperbarui_oleh' => Auth::user()->user_id,
             ]);
         } elseif (auth()->user()->role === 'Cashier') {
             $request->validate([
