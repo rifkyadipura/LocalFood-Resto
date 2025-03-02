@@ -50,7 +50,7 @@
             order: [[0, 'desc']], // Mengurutkan berdasarkan kolom pertama (DT_RowIndex) secara menurun
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'nama_lengkap', name: 'nama_lengkap' },
+                { data: 'full_name', name: 'full_name' },
                 { data: 'email', name: 'email' },
                 { data: 'role', name: 'role' },
                 {

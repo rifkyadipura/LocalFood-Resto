@@ -35,7 +35,7 @@ class RegisterController extends Controller
                 return redirect('/login');
             }
 
-            if (!in_array($user->role, ['admin', 'Kepala Staf'])) {
+            if (!in_array($user->role, ['admin', 'Head Staff'])) {
                 return abort(403, 'Unauthorized access');
             }
 
@@ -52,7 +52,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['nullable'],
@@ -68,7 +68,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'nama_lengkap' => $data['nama_lengkap'],
+            'full_name' => $data['full_name'],
             'email' => $data['email'],
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make($data['password']),
@@ -85,11 +85,12 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        // dd($request);
         $this->validator($request->all())->validate();
 
         $this->create($request->all());
 
-        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'Kepala Staf'])) {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'Head Staff'])) {
             return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
         }
 

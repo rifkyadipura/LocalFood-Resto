@@ -22,7 +22,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
             return view('users.index');
         } else {
             $title = "Akses Ditolak";
@@ -36,17 +36,17 @@ class UsersController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            $query = User::select(['users_id', 'nama_lengkap', 'email', 'role', 'created_at']);
-            if ($user->role === 'Kepala Staf') {
+            $query = User::select(['user_id', 'full_name', 'email', 'role', 'created_at']);
+            if ($user->role === 'Head Staff') {
                 $query->where('role', '!=', 'admin');
             }
-            $users = $query->orderBy('users_id', 'desc');
+            $users = $query->orderBy('user_id', 'desc');
 
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($user) {
-                    $editButton = '<a href="' . route('users.edit', $user->users_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>';
-                    $deleteButton = '<form action="' . route('users.destroy', $user->users_id) . '" method="POST" style="display:inline-block;">
+                    $editButton = '<a href="' . route('users.edit', $user->user_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>';
+                    $deleteButton = '<form action="' . route('users.destroy', $user->user_id) . '" method="POST" style="display:inline-block;">
                                         ' . csrf_field() . method_field('DELETE') . '
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus user ini?\')"><i class="fas fa-trash"></i> Hapus</button>
                                     </form>';
@@ -73,7 +73,7 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
             $user = User::find($id);
 
             if (!$user) {
@@ -99,14 +99,14 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id . ',users_id',
-            'role' => 'required|in:Kepala Staf,Kasir',
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id . ',user_id',
+            'role' => 'required|in:Head Staff,Cashier',
         ]);
 
         $user = User::findOrFail($id);
 
-        $user->nama_lengkap = $request->nama_lengkap;
+        $user->full_name = $request->full_name;
         $user->email = $request->email;
         $user->role = $request->role;
         $user->save();

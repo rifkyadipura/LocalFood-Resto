@@ -17,15 +17,15 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('users.update', $user->users_id) }}">
+            <form method="POST" action="{{ route('users.update', $user->user_id) }}">
                 @csrf
                 @method('PUT')
 
                 <div class="row mb-3">
-                    <label for="nama_lengkap" class="col-md-4 col-form-label text-md-end">{{ __('Nama Lengkap') }}</label>
+                    <label for="full_name" class="col-md-4 col-form-label text-md-end">{{ __('Nama Lengkap') }}</label>
                     <div class="col-md-6">
-                        <input id="nama_lengkap" type="text" class="form-control @error('nama_lengkap') is-invalid @enderror" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}" required autofocus>
-                        @error('nama_lengkap')
+                        <input id="full_name" type="text" class="form-control @error('full_name') is-invalid @enderror" name="full_name" value="{{ old('full_name', $user->full_name) }}" required autofocus>
+                        @error('full_name')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -49,8 +49,8 @@
                     <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
                     <div class="col-md-6">
                         <select id="role" class="form-control @error('role') is-invalid @enderror" name="role" required>
-                            <option value="Kepala Staf" {{ old('role', $user->role) == 'Kepala Staf' ? 'selected' : '' }}>Kepala Staf</option>
-                            <option value="Kasir" {{ old('role', $user->role) == 'Kasir' ? 'selected' : '' }}>Kasir</option>
+                            <option value="Head Staff" {{ old('role', $user->role) == 'Head Staff' ? 'selected' : '' }}>Head Staff</option>
+                            <option value="Cashier" {{ old('role', $user->role) == 'Cashier' ? 'selected' : '' }}>Cashier</option>
                         </select>
                         @error('role')
                             <span class="invalid-feedback" role="alert">

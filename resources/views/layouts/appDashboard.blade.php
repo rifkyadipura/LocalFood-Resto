@@ -89,7 +89,7 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark font-semibold" href="/home">Home</a>
                     </li>
-                    @if (in_array(auth()->user()->role, ['admin', 'Kepala Staf']))
+                    @if (in_array(auth()->user()->role, ['admin', 'Head Staff']))
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('users.index') }}">Users</a>
                         </li>
@@ -97,7 +97,7 @@
                             <a class="nav-link text-dark font-semibold" href="{{ route('transaksi.index') }}">Transaksi</a>
                         </li>
                     @endif
-                    @if (in_array(auth()->user()->role, ['admin', 'Kepala Staf', 'Cashier']))
+                    @if (in_array(auth()->user()->role, ['admin', 'Head Staff', 'Cashier']))
                         <li class="nav-item">
                             <a class="nav-link text-dark font-semibold" href="{{ route('menu.index') }}">Menu</a>
                         </li>
