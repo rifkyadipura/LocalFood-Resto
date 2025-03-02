@@ -5,27 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kategory extends Model
+class Category extends Model
 {
     use HasFactory;
 
     // Nama tabel di database
-    protected $table = 'kategory';
-    protected $primaryKey = 'kategory_id';
+    protected $table = 'categories';
+    protected $primaryKey = 'category_id';
 
     // Kolom yang bisa diisi (fillable) melalui mass assignment
     protected $fillable = [
-        'nama_kategory',
+        'category_name',
     ];
 
     /**
-     * Relasi ke tabel `menu` (one-to-many).
+     * Relasi ke tabel `menu_items` (one-to-many).
      * Satu kategori dapat memiliki banyak menu.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function menus()
+    public function menuItems()
     {
-        return $this->hasMany(Menu::class, 'kategory_id');
+        return $this->hasMany(MenuItem::class, 'category_id', 'category_id');
     }
 }

@@ -25,7 +25,7 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
             return view('transaksi.index');
         } else {
             $title = "Akses Ditolak";
@@ -139,11 +139,11 @@ class TransaksiController extends Controller
 
     public function show($kode_transaksi)
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Kepala Staf')) {
+        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
             $transaksis = Transaksi::with(['menu', 'user'])
                 ->where('kode_transaksi', $kode_transaksi)
                 ->get();
-            $kasir = $transaksis->first()->user->nama_lengkap ?? 'Tidak Diketahui';
+            $kasir = $transaksis->first()->user->full_name ?? 'Tidak Diketahui';
             return view('transaksi.detail', compact('transaksis', 'kode_transaksi', 'kasir'));
         } else {
             $title = "Akses Ditolak";
