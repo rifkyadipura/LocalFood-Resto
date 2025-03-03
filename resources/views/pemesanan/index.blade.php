@@ -287,20 +287,20 @@
     <!-- Tampilkan kategori Makanan Berat -->
     <h3 id="makanan-berat" class="text-primary">Makanan Berat</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach($menus->where('kategory_id', 1) as $menu)
+        @foreach($menuItems->where('category_id', 1) as $menu)
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
-                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
-                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <h5 class="card-title">{{ $menu->menu_name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->price, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stock }}</p>
+                    <p class="card-text">{{ $menu->description }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
-                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stock }}"
+                        data-menu="{{ $menu->menu_name }}" data-price="{{ $menu->price }}" data-id="{{ $menu->menu_item_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
@@ -311,20 +311,20 @@
     <!-- Tampilkan kategori Makanan Ringan -->
     <h3 id="makanan-ringan" class="text-primary mt-5">Makanan Ringan</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach($menus->where('kategory_id', 2) as $menu)
+        @foreach($menuItems->where('category_id', 2) as $menu)
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
-                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
-                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <h5 class="card-title">{{ $menu->menu_name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->price, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stock }}</p>
+                    <p class="card-text">{{ $menu->description }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
-                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stock }}"
+                        data-menu="{{ $menu->menu_name }}" data-price="{{ $menu->price }}" data-id="{{ $menu->menu_item_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
@@ -335,20 +335,20 @@
     <!-- Tampilkan kategori Minuman -->
     <h3 id="minuman" class="text-primary mt-5">Minuman</h3>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach($menus->where('kategory_id', 3) as $menu)
+        @foreach($menuItems->where('category_id', 3) as $menu)
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->foto }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
-                    <p class="card-stock">Stok: {{ $menu->stok }}</p>
-                    <p class="card-text">{{ $menu->deskripsi }}</p>
+                    <h5 class="card-title">{{ $menu->menu_name }}</h5>
+                    <p class="card-text fw-bold">Harga: Rp {{ number_format($menu->price, 2, ',', '.') }}</p>
+                    <p class="card-stock">Stok: {{ $menu->stock }}</p>
+                    <p class="card-text">{{ $menu->description }}</p>
                     <input type="number" class="form-control mb-2 menu-quantity"
-                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stok }}"
-                        data-menu="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-id="{{ $menu->menu_id }}">
+                        placeholder="Jumlah Pesanan" min="1" max="{{ $menu->stock }}"
+                        data-menu="{{ $menu->menu_name }}" data-price="{{ $menu->price }}" data-id="{{ $menu->menu_item_id }}">
                     <button class="btn btn-primary w-100 btn-add-to-cart">Pesan</button>
                 </div>
             </div>
@@ -368,7 +368,7 @@
                 const quantity = parseInt(quantityInput.value);
                 const menuName = quantityInput.getAttribute('data-menu');
                 const price = parseFloat(quantityInput.getAttribute('data-price'));
-                const menuId = parent.querySelector('.menu-quantity').getAttribute('data-id');
+                const menuId = quantityInput.getAttribute('data-id');
                 const stockElement = parent.querySelector('.card-stock');
                 const currentStock = parseInt(stockElement.textContent.split(': ')[1]);
 
@@ -385,19 +385,18 @@
                 const total = quantity * price;
 
                 cart.push({
-                    menu_id: quantityInput.getAttribute('data-id'), // Menggunakan id dari data-menu-id
+                    menu_item_id: menuId, // Sesuai dengan kolom database yang diperbarui
                     name: menuName,
                     quantity,
                     price,
                     total
                 });
 
-                // Mengurangi stok
-                const newStock = currentStock - quantity;
-                stockElement.textContent = `Stok: ${newStock}`;
+                // Perbarui stok di tampilan
+                stockElement.textContent = `Stok: ${currentStock - quantity}`;
                 quantityInput.value = '';
-                updateCartModal();
 
+                updateCartModal();
                 document.getElementById('orderBadge').textContent = cart.length;
 
                 showNotification();
@@ -608,7 +607,7 @@
         });
 
         // Function untuk submit data pembayaran
-        function submitPayment(method, uangDibayar = 0, uangKembalian = 0) {
+        function submitPayment(method, amountPaid = 0, changeAmount = 0) {
             try {
                 const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
                 const tax = subtotal * 0.1;
@@ -622,10 +621,10 @@
                     <input type="hidden" name="cart" value='${JSON.stringify(cart)}'>
                     <input type="hidden" name="subtotal" value="${subtotal}">
                     <input type="hidden" name="tax" value="${tax}">
-                    <input type="hidden" name="total_harga_pajak" value="${total}">
-                    <input type="hidden" name="metode" value="${method}">
-                    <input type="hidden" name="uang_dibayar" value="${uangDibayar}">
-                    <input type="hidden" name="uang_kembalian" value="${uangKembalian}">
+                    <input type="hidden" name="total_price_taxed" value="${total}">
+                    <input type="hidden" name="payment_method" value="${method}">
+                    <input type="hidden" name="amount_paid" value="${amountPaid}">
+                    <input type="hidden" name="change_amount" value="${changeAmount}">
                 `;
                 document.body.appendChild(form);
                 form.submit();

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +23,12 @@
                 <h4 class="mb-0">Struk Pembayaran</h4>
             </div>
             <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Kode Transaksi:</strong> <span>{{ $transactionCode }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Kasir:</strong> <span>{{ auth()->user()->full_name }}</span>
+                </div>
                 <!-- Tabel Detail Struk -->
                 <table class="table table-bordered">
                     <thead class="table-primary">
@@ -56,19 +62,19 @@
                         </tr>
                         <tr>
                             <td colspan="4" class="text-end"><strong>Total Bayar (Setelah Pajak):</strong></td>
-                            <td>Rp {{ number_format($total_harga_pajak, 2, ',', '.') }}</td>
+                            <td>Rp {{ number_format($total_price_taxed, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
-                            <td>Rp {{ number_format($uangDibayar, 2, ',', '.') }}</td>
+                            <td>Rp {{ number_format($amountPaid, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-end"><strong>Uang Kembalian:</strong></td>
-                            <td>Rp {{ number_format($uangKembalian, 2, ',', '.') }}</td>
+                            <td>Rp {{ number_format($changeAmount, 2, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-end"><strong>Metode Pembayaran:</strong></td>
-                            <td><strong>{{ $metode }}</strong></td>
+                            <td><strong>{{ $paymentMethod }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>

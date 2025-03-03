@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pemesanan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Menu;
-use App\Models\Transaksi;
+use App\Models\MenuItem;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
 class PemesananController extends Controller
@@ -18,8 +18,8 @@ class PemesananController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $menus = Menu::all();
-            return view('pemesanan.index', compact('menus'));
+            $menuItems = MenuItem::all();
+            return view('pemesanan.index', compact('menuItems'));
         } else {
             return redirect()->route('login')->withErrors(['message' => 'Silakan login terlebih dahulu untuk mengakses halaman ini!']);
         }
@@ -31,10 +31,10 @@ class PemesananController extends Controller
         if (empty($cart)) {
             return redirect()->route('index.pemesanan')->withErrors(['message' => 'Keranjang kosong!']);
         }
-        $menus = Menu::where('status', 1)->get();
+        $menuItems = MenuItem::where('status', 1)->get();
 
         return view('pemesanan.index', [
-            'menus' => $menus,
+            'menuItems' => $menuItems,
             'cart' => $cart,
             'showPaymentModal' => true
         ]);
@@ -44,8 +44,8 @@ class PemesananController extends Controller
     {
         $request->validate([
             'cart' => 'required|json',
-            'uang_dibayar' => 'required|numeric|min:0',
-            'metode' => 'required|string|in:Cash,QRIS',
+            'amount_paid' => 'required|numeric|min:0',
+            'payment_method' => 'required|string|in:Cash,QRIS',
         ]);
 
         $cart = json_decode($request->input('cart'), true);
@@ -56,57 +56,57 @@ class PemesananController extends Controller
         // Hitung subtotal, pajak, dan total setelah pajak
         $subtotal = collect($cart)->sum('total'); // Total harga sebelum pajak
         $tax = $subtotal * 0.1; // Pajak 10%
-        $total_harga_pajak = $subtotal + $tax; // Total setelah pajak
+        $total_price_taxed = $subtotal + $tax; // Total setelah pajak
 
-        $uangDibayar = $request->input('uang_dibayar');
-        $metode = $request->input('metode');
-        $kodeTransaksi = Transaksi::generateKodeTransaksi();
+        $amountPaid = $request->input('amount_paid');
+        $paymentMethod = $request->input('payment_method');
+        $transactionCode = Transaction::generateTransactionCode();
 
-        if ($metode === 'Cash' && $uangDibayar < $total_harga_pajak) {
+        if ($paymentMethod === 'Cash' && $amountPaid < $total_price_taxed) {
             return redirect()->back()->withErrors(['message' => 'Uang yang dibayarkan kurang!']);
         }
 
-        $uangKembalian = $uangDibayar - $total_harga_pajak;
+        $changeAmount = $amountPaid - $total_price_taxed;
 
         try {
             DB::beginTransaction();
 
             foreach ($cart as $item) {
-                $menu = Menu::find($item['menu_id']);
-                if (!$menu || $menu->stok < $item['quantity']) {
+                $menuItem = MenuItem::find($item['menu_item_id']);
+                if (!$menuItem || $menuItem->stock < $item['quantity']) {
                     throw new \Exception('Menu tidak valid atau stok tidak mencukupi.');
                 }
 
-                Transaksi::create([
-                    'kode_transaksi' => $kodeTransaksi,
-                    'menu_id' => $menu->menu_id,
+                Transaction::create([
+                    'transaction_code' => $transactionCode,
+                    'menu_item_id' => $menuItem->menu_item_id,
                     'user_id' => auth()->user()->user_id,
-                    'jumlah' => $item['quantity'],
-                    'total_harga' => $item['total'], // Harga sebelum pajak
-                    'total_harga_pajak' => $item['total'] + ($item['total'] * 0.1), // Harga setelah pajak
-                    'uang_dibayar' => $uangDibayar,
-                    'uang_kembalian' => $uangKembalian,
-                    'metode_pembayaran' => $metode,
+                    'quantity' => $item['quantity'],
+                    'total_price' => $item['total'], // Harga sebelum pajak
+                    'total_price_taxed' => $item['total'] + ($item['total'] * 0.1), // Harga setelah pajak
+                    'amount_paid' => $amountPaid,
+                    'change_amount' => $changeAmount,
+                    'payment_method' => $paymentMethod,
                 ]);
 
-                $menu->stok -= $item['quantity'];
-                if ($menu->stok <= 0) {
-                    $menu->status = 0;
+                $menuItem->stock -= $item['quantity'];
+                if ($menuItem->stock <= 0) {
+                    $menuItem->status = 0;
                 }
-                $menu->save();
+                $menuItem->save();
             }
 
             DB::commit();
 
             return view('pemesanan.struk', compact(
-                'kodeTransaksi',
+                'transactionCode',
                 'cart',
                 'subtotal',
                 'tax',
-                'total_harga_pajak',
-                'uangDibayar',
-                'uangKembalian',
-                'metode'
+                'total_price_taxed',
+                'amountPaid',
+                'changeAmount',
+                'paymentMethod'
             ));
         } catch (\Exception $e) {
             DB::rollBack();

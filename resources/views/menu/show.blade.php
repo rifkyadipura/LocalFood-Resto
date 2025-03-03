@@ -13,9 +13,9 @@
             <div class="row">
                 <div class="col-md-4 text-center">
                     <!-- Foto Menu -->
-                    @if ($menu->foto)
-                        <a href="{{ asset($menu->foto) }}" target="_blank">
-                            <img src="{{ asset($menu->foto) }}" alt="Foto {{ $menu->nama_menu }}" class="img-thumbnail mb-3" width="100%">
+                    @if ($menu->image)
+                        <a href="{{ asset($menu->image) }}" target="_blank">
+                            <img src="{{ asset($menu->image) }}" alt="Foto {{ $menu->menu_name }}" class="img-thumbnail mb-3" width="100%">
                         </a>
                     @else
                         <p class="text-muted">Foto tidak tersedia</p>
@@ -27,19 +27,19 @@
                         <tbody>
                             <tr>
                                 <th>Nama</th>
-                                <td>{{ $menu->nama_menu }}</td>
+                                <td>{{ $menu->menu_name }}</td>
                             </tr>
                             <tr>
                                 <th>Harga</th>
-                                <td>Rp {{ number_format($menu->harga, 2, ',', '.') }}</td>
+                                <td>Rp {{ number_format($menu->price, 2, ',', '.') }}</td>
                             </tr>
                             <tr>
                                 <th>Stok</th>
-                                <td>{{ $menu->stok }}</td>
+                                <td>{{ $menu->stock }}</td>
                             </tr>
                             <tr>
                                 <th>Kategori</th>
-                                <td>{{ $menu->kategori->nama_kategory ?? 'Tidak ada kategori' }}</td>
+                                <td>{{ $menu->category->category_name ?? 'Tidak ada kategori' }}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>
@@ -53,15 +53,15 @@
                             </tr>
                             <tr>
                                 <th>Deskripsi</th>
-                                <td>{{ $menu->deskripsi ?? 'Tidak ada deskripsi' }}</td>
+                                <td>{{ $menu->description ?? 'Tidak ada deskripsi' }}</td>
                             </tr>
                             <tr>
                                 <th>Dibuat Oleh</th>
-                                <td>{{ $menu->pembuat ? $menu->pembuat->full_name : '-' }}</td>
+                                <td>{{ $menu->creator ? $menu->creator->full_name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Diperbarui Oleh</th>
-                                <td>{{ $menu->pengupdate ? $menu->pengupdate->full_name : '-' }}</td>
+                                <td>{{ $menu->updater ? $menu->updater->full_name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Dibuat Pada</th>

@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Menu;
 
 use App\Http\Controllers\Controller;
-use App\Models\Menu;
+use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\Kategory;
-use NumberFormatter;
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -30,17 +29,17 @@ class MenuController extends Controller
 
     public function getData()
     {
-        $menu = Menu::with('kategori')
-                    ->select(['menu_id', 'nama_menu', 'harga', 'stok', 'status', 'kategory_id'])
-                    ->orderBy('created_at', 'desc');
+        $menu = MenuItem::with('category')
+            ->select(['menu_item_id', 'menu_name', 'price', 'stock', 'status', 'category_id'])
+            ->orderBy('created_at', 'desc');
 
         return DataTables::of($menu)
             ->addIndexColumn()
-            ->addColumn('kategori', function ($menu) {
-                return $menu->kategori ? $menu->kategori->nama_kategory : '-';
+            ->addColumn('category', function ($menu) {
+                return $menu->category ? $menu->category->category_name : '-';
             })
-            ->addColumn('harga', function ($menu) {
-                return 'Rp ' . number_format($menu->harga, 0, ',', '.');
+            ->addColumn('price', function ($menu) {
+                return 'Rp ' . number_format($menu->price, 0, ',', '.');
             })
             ->addColumn('status', function ($menu) {
                 return $menu->status == 1
@@ -49,13 +48,13 @@ class MenuController extends Controller
             })
             ->addColumn('actions', function ($menu) {
                 return '<div class="text-center">
-                            <a href="' . route('menu.show', $menu->menu_id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
-                            <a href="' . route('menu.edit', $menu->menu_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
+                            <a href="' . route('menu.show', $menu->menu_item_id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</a>
+                            <a href="' . route('menu.edit', $menu->menu_item_id) . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>'
                             . (in_array(auth()->user()->role, ['admin', 'Head Staff']) ? '
-                            <form action="' . route('menu.destroy', $menu->menu_id) . '" method="POST" class="d-inline">
+                            <form action="' . route('menu.destroy', $menu->menu_item_id) . '" method="POST" class="d-inline">
                                 ' . csrf_field() . method_field('DELETE') . '
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Apakah Anda yakin ingin menghapus menu ini?\')">
-                                    <i class="fas fa-trash"></i> Hapus
+                                    <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>' : '') . '
                         </div>';
@@ -72,8 +71,8 @@ class MenuController extends Controller
     public function create()
     {
         if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'Head Staff')) {
-            $kategories = Kategory::all();
-            return view('menu.create', compact('kategories'));
+            $categories = Category::all();
+            return view('menu.create', compact('categories'));
         } else {
             $title = "Akses Ditolak";
             $message = "Anda tidak memiliki izin untuk mengakses halaman ini.";
@@ -91,32 +90,32 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_menu' => 'required|string|max:255',
-            'harga' => 'required|numeric|min:0',
-            'stok' => 'required|integer|min:0',
+            'menu_name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'status' => 'required|boolean',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'deskripsi' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
         ]);
 
         $filePath = null;
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $fileName = preg_replace('/\s+/', '_', $request->nama_menu) . '.' . $file->getClientOriginalExtension();
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = preg_replace('/\s+/', '_', $request->menu_name) . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/menu'), $fileName);
             $filePath = 'uploads/menu/' . $fileName;
         }
 
-        Menu::create([
-            'nama_menu' => $request->nama_menu,
-            'harga' => $request->harga,
-            'stok' => $request->stok,
-            'kategory_id' => $request->kategory_id,
+        MenuItem::create([
+            'menu_name' => $request->menu_name,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'category_id' => $request->category_id,
             'status' => $request->status,
-            'foto' => $filePath,
-            'deskripsi' => $request->deskripsi,
-            'dibuat_oleh' => Auth::user()->user_id,
-            'diperbarui_oleh' => Auth::user()->user_id,
+            'image' => $filePath,
+            'description' => $request->description,
+            'created_by' => Auth::user()->user_id,
+            'updated_by' => Auth::user()->user_id,
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan!');
@@ -130,8 +129,8 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu = Menu::with(['pembuat', 'pengupdate', 'kategori'])->findOrFail($id);
-        $menu->nama_kategory = $menu->kategori->nama_kategory ?? 'Tidak ada kategori';
+        $menu = MenuItem::with(['creator', 'updater', 'category'])->findOrFail($id);
+        $menu->category_name = $menu->category->category_name ?? 'No category';
         return view('menu.show', compact('menu'));
     }
 
@@ -143,9 +142,9 @@ class MenuController extends Controller
      */
     public function edit($id)
     {
-        $menu = Menu::findOrFail($id);
-        $kategories = Kategory::all();
-        return view('menu.edit', compact('menu', 'kategories'));
+        $menu = MenuItem::findOrFail($id);
+        $categories = Category::all();
+        return view('menu.edit', compact('menu', 'categories'));
     }
 
     /**
@@ -157,58 +156,58 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $menu = Menu::findOrFail($id);
+        $menu = MenuItem::findOrFail($id);
 
         if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff')) {
             $request->validate([
-                'nama_menu' => 'string|max:255',
-                'harga' => 'numeric|min:0',
-                'stok' => 'required|integer|min:0',
+                'menu_name' => 'string|max:255',
+                'price' => 'numeric|min:0',
+                'stock' => 'required|integer|min:0',
                 'status' => 'boolean',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'deskripsi' => 'nullable|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'nullable|string',
             ]);
 
-            if ($request->hasFile('foto')) {
-                $file = $request->file('foto');
-                $fileName = preg_replace('/\s+/', '_', $request->nama_menu) . '.' . $file->getClientOriginalExtension();
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $fileName = preg_replace('/\s+/', '_', $request->menu_name) . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/menu'), $fileName);
                 $filePath = 'uploads/menu/' . $fileName;
 
-                if ($menu->foto && file_exists(public_path($menu->foto))) {
-                    unlink(public_path($menu->foto));
+                if ($menu->image && file_exists(public_path($menu->image))) {
+                    unlink(public_path($menu->image));
                 } else {
                     Log::warning('Logika unlink tidak dijalankan karena foto tidak ditemukan atau kosong.');
                 }
 
-                $menu->foto = $filePath;
+                $menu->image = $filePath;
             }
 
             $menu->update([
-                'nama_menu' => $request->nama_menu,
-                'harga' => $request->harga,
-                'stok' => $request->stok,
-                'kategory_id' => $request->kategory_id,
-                'status' => ($request->stok > 0) ? 1 : 0,
-                'deskripsi' => $request->deskripsi,
-                'foto' => $menu->foto ?? null,
-                'diperbarui_oleh' => Auth::user()->user_id,
+                'menu_name' => $request->menu_name,
+                'price' => $request->price,
+                'stock' => $request->stock,
+                'category_id' => $request->category_id,
+                'status' => ($request->stock > 0) ? 1 : 0,
+                'description' => $request->description,
+                'image' => $menu->image ?? null,
+                'updated_by' => Auth::user()->user_id,
             ]);
         } elseif (auth()->user()->role === 'Cashier') {
             $request->validate([
-                'stok' => 'required|integer|min:0',
+                'stock' => 'required|integer|min:0',
             ]);
 
             $menu->update([
-                'stok' => $request->stok,
-                'status' => ($request->stok > 0) ? 1 : 0,
-                'diperbarui_oleh' => Auth::user()->user_id,
+                'stock' => $request->stock,
+                'status' => ($request->stock > 0) ? 1 : 0,
+                'updated_by' => Auth::user()->user_id,
             ]);
         } else {
             abort(403, 'Unauthorized action.');
         }
 
-        return redirect()->route('menu.index')->with('success', 'Menu berhasil diperbarui!');
+        return redirect()->route('menu.index')->with('success', 'Menu Item berhasil dihapus!');
     }
 
     /**
@@ -219,12 +218,15 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
-        $menu = Menu::findOrFail($id);
-        if ($menu->foto && file_exists(public_path($menu->foto))) {
-            unlink(public_path($menu->foto));
+        $menu = MenuItem::findOrFail($id);
+
+        // Hapus file gambar jika ada
+        if ($menu->image && file_exists(public_path($menu->image))) {
+            unlink(public_path($menu->image));
         }
+
         $menu->delete();
 
-        return redirect()->route('menu.index')->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('menu.index')->with('success', 'Menu item successfully deleted!');
     }
 }

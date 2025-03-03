@@ -46,22 +46,23 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('menu.data') }}",  // Mengambil data dari rute DataTables
+                url: "{{ route('menu.data') }}",  // Pastikan rute benar
                 error: function (xhr, error, thrown) {
                     console.error("AJAX Error:", xhr.responseText);
                 }
             },
-            order: [[0, 'desc']],  // Mengurutkan berdasarkan kolom pertama (No) secara menurun
+            order: [[0, 'desc']],  // Mengurutkan berdasarkan No (index)
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'nama_menu', name: 'nama_menu' },
-                { data: 'harga', name: 'harga' },
-                { data: 'stok', name: 'stok' },
-                { data: 'kategori', name: 'kategori', orderable: false, searchable: false },
-                { data: 'status', name: 'status', orderable: false, searchable: false },
-                { data: 'actions', name: 'actions', orderable: false, searchable: false }
+                { data: 'menu_name', name: 'menu_name' },  // Nama menu dalam bahasa Inggris
+                { data: 'price', name: 'price' },  // Harga
+                { data: 'stock', name: 'stock' },  // Stok
+                { data: 'category', name: 'category', orderable: false, searchable: false }, // Kategori
+                { data: 'status', name: 'status', orderable: false, searchable: false }, // Status
+                { data: 'actions', name: 'actions', orderable: false, searchable: false } // Tombol aksi
             ]
         });
     });
 </script>
 @endpush
+

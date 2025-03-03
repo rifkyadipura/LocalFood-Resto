@@ -20,40 +20,40 @@
                 </div>
             @endif
 
-            <form action="{{ route('menu.update', $menu->menu_id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('menu.update', $menu->menu_item_id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 {{-- Nama Menu (hanya untuk admin dan Head Staff) --}}
                 @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff'))
                 <div class="mb-3">
-                    <label for="nama_menu" class="form-label">Nama Menu</label>
-                    <input type="text" name="nama_menu" id="nama_menu" class="form-control" value="{{ $menu->nama_menu }}" required>
+                    <label for="menu_name" class="form-label">Nama Menu</label>
+                    <input type="text" name="menu_name" id="menu_name" class="form-control" value="{{ $menu->menu_name }}" required>
                 </div>
 
                 {{-- Harga (hanya untuk admin dan Head Staff) --}}
                 <div class="mb-3">
-                    <label for="harga_display" class="form-label">Harga</label>
-                    <input type="text" id="harga_display" class="form-control" value="{{ $menu->harga ? 'Rp ' . number_format($menu->harga, 0, ',', '.') : '' }}" required>
-                    <input type="hidden" name="harga" id="harga" value="{{ $menu->harga }}">
+                    <label for="price_display" class="form-label">Harga</label>
+                    <input type="text" id="price_display" class="form-control" value="{{ $menu->price ? 'Rp ' . number_format($menu->price, 0, ',', '.') : '' }}" required>
+                    <input type="hidden" name="price" id="price" value="{{ $menu->price }}">
                 </div>
                 @endif
 
                 {{-- Stok (dapat diakses oleh semua) --}}
                 <div class="mb-3">
-                    <label for="stok" class="form-label">Stok</label>
-                    <input type="number" name="stok" id="stok" class="form-control" value="{{ $menu->stok }}" required>
+                    <label for="stock" class="form-label">Stok</label>
+                    <input type="number" name="stock" id="stock" class="form-control" value="{{ $menu->stock }}" required>
                 </div>
 
                 {{-- Kategori (hanya untuk admin dan Head Staff) --}}
                 @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff'))
                 <div class="mb-3">
-                    <label for="kategori" class="form-label">Kategori</label>
-                    <select name="kategory_id" id="kategori" class="form-select" required>
+                    <label for="category" class="form-label">Kategori</label>
+                    <select name="category_id" id="category" class="form-select" required>
                         <option value="" disabled selected>Pilih Kategori</option>
-                        @foreach ($kategories as $kategori)
-                            <option value="{{ $kategori->kategory_id }}" {{ $menu->kategory_id == $kategori->kategory_id ? 'selected' : '' }}>
-                                {{ $kategori->nama_kategory }}
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->category_id }}" {{ $menu->category_id == $category->category_id ? 'selected' : '' }}>
+                                {{ $category->category_name }}
                             </option>
                         @endforeach
                     </select>
@@ -74,19 +74,19 @@
                 {{-- Foto (hanya untuk admin dan Head Staff) --}}
                 @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff'))
                 <div class="mb-3">
-                    <label for="foto" class="form-label">Foto</label>
-                    @if ($menu->foto)
-                        <img src="{{ asset($menu->foto) }}" alt="Foto {{ $menu->name }}" class="img-thumbnail mb-2" width="150">
+                    <label for="image" class="form-label">Foto</label>
+                    @if ($menu->image)
+                        <img src="{{ asset($menu->image) }}" alt="Foto {{ $menu->menu_name }}" class="img-thumbnail mb-2" width="150">
                     @endif
-                    <input type="file" name="foto" id="foto" class="form-control">
+                    <input type="file" name="image" id="image" class="form-control">
                 </div>
                 @endif
 
                 {{-- Deskripsi (hanya untuk admin dan Head Staff) --}}
                 @if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'Head Staff'))
                 <div class="mb-3">
-                    <label for="deskripsi" class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3">{{ $menu->deskripsi }}</textarea>
+                    <label for="description" class="form-label">Deskripsi</label>
+                    <textarea name="description" id="description" class="form-control" rows="3">{{ $menu->description }}</textarea>
                 </div>
                 @endif
 
@@ -97,21 +97,20 @@
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const hargaDisplay = document.getElementById('harga_display');
-        const hargaHidden = document.getElementById('harga');
+        const priceDisplay = document.getElementById('price_display');
+        const priceHidden = document.getElementById('price');
 
-        // Format awal saat halaman dimuat
-        if (hargaHidden.value) {
-            hargaDisplay.value = formatRupiah(hargaHidden.value);
+        if (priceHidden.value) {
+            priceDisplay.value = formatRupiah(priceHidden.value);
         }
 
-        // Event listener untuk memformat input teks
-        hargaDisplay.addEventListener('input', function (e) {
-            const value = e.target.value.replace(/[^0-9]/g, ''); // Hanya angka
-            hargaDisplay.value = formatRupiah(value);
-            hargaHidden.value = value; // Simpan angka murni ke input hidden
+        priceDisplay.addEventListener('input', function (e) {
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            priceDisplay.value = formatRupiah(value);
+            priceHidden.value = value;
         });
 
         function formatRupiah(number) {
@@ -121,52 +120,43 @@
             }).format(number);
         }
 
-            // Validasi Status Berdasarkan Stok
-        const stokInput = document.getElementById('stok'); // Input stok
-        const statusSelect = document.getElementById('status'); // Dropdown status
+        const stockInput = document.getElementById('stock');
+        const statusSelect = document.getElementById('status');
 
-        // Fungsi untuk memeriksa stok dan memperbarui status
         function updateStatusOptions() {
-            const stokValue = parseInt(stokInput.value) || 0; // Ambil nilai stok atau 0 jika kosong
+            const stockValue = parseInt(stockInput.value) || 0;
 
-            if (isNaN(stokValue) || stokValue === 0) {
-                // Jika stok kosong atau tidak valid, paksa status "Tidak Tersedia"
-                statusSelect.value = "0"; // Set "Tidak Tersedia"
-                statusSelect.querySelector('option[value="1"]').disabled = true; // Disable "Tersedia"
-                statusSelect.querySelector('option[value="0"]').disabled = false; // Aktifkan "Tidak Tersedia"
+            if (isNaN(stockValue) || stockValue === 0) {
+                statusSelect.value = "0";
+                statusSelect.querySelector('option[value="1"]').disabled = true;
+                statusSelect.querySelector('option[value="0"]').disabled = false;
             } else {
-                // Jika stok lebih dari 0, paksa status "Tersedia"
-                statusSelect.value = "1"; // Set "Tersedia"
-                statusSelect.querySelector('option[value="0"]').disabled = true; // Disable "Tidak Tersedia"
-                statusSelect.querySelector('option[value="1"]').disabled = false; // Aktifkan "Tersedia"
+                statusSelect.value = "1";
+                statusSelect.querySelector('option[value="0"]').disabled = true;
+                statusSelect.querySelector('option[value="1"]').disabled = false;
             }
 
-            // Jika input kosong (belum diisi), kedua opsi status dinonaktifkan
-            if (stokInput.value === '') {
-                statusSelect.value = ''; // Reset pilihan status
+            if (stockInput.value === '') {
+                statusSelect.value = '';
                 statusSelect.querySelector('option[value="0"]').disabled = true;
                 statusSelect.querySelector('option[value="1"]').disabled = true;
             }
         }
 
-        // Panggil fungsi saat stok berubah
-        stokInput.addEventListener('input', updateStatusOptions);
-
-        // Jalankan saat halaman dimuat (untuk nilai default)
+        stockInput.addEventListener('input', updateStatusOptions);
         updateStatusOptions();
 
-        // Validasi sebelum submit form
         document.querySelector('form').addEventListener('submit', function (e) {
-            const stokValue = parseInt(stokInput.value) || 0;
+            const stockValue = parseInt(stockInput.value) || 0;
             const statusValue = statusSelect.value;
 
-            if (stokInput.value === '') {
+            if (stockInput.value === '') {
                 e.preventDefault();
                 alert('Harap isi stok terlebih dahulu sebelum menyimpan.');
                 return;
             }
 
-            if (stokValue === 0 && statusValue == "1") {
+            if (stockValue === 0 && statusValue == "1") {
                 e.preventDefault();
                 alert('Status "Tersedia" tidak boleh dipilih jika stok kosong.');
             }
