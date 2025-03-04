@@ -4,14 +4,14 @@
 <div class="container mt-5">
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-info text-white d-flex justify-content-between align-items-center rounded-top">
-            <h4 class="mb-0">Detail Transaksi: {{ $kode_transaksi }}</h4>
+            <h4 class="mb-0">Detail Transaksi: {{ $transaction_code }}</h4>
             <a href="{{ route('transaksi.index') }}" class="btn btn-light">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Transaksi
             </a>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
-                <thead>
+                <thead class="table-primary">
                     <tr>
                         <th>No</th>
                         <th>Nama Menu</th>
@@ -27,13 +27,15 @@
                     @foreach ($transaksis as $transaksi)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $transaksi->menu->nama_menu }}</td>
-                            <td>Rp{{ number_format($transaksi->menu->harga, 2) }}</td>
-                            <td>{{ $transaksi->jumlah }}</td>
-                            <td>Rp{{ number_format($transaksi->total_harga, 2) }}</td>
+                            <td>{{ $transaksi->menuItem->menu_name ?? 'Menu Tidak Diketahui' }}</td>
+                            <td>
+                                Rp{{ number_format($transaksi->menuItem->price ?? 0, 2, ',', '.') }}
+                            </td>
+                            <td>{{ $transaksi->quantity }}</td>
+                            <td>Rp{{ number_format($transaksi->total_price, 2, ',', '.') }}</td>
                         </tr>
                         @php
-                            $subtotal += $transaksi->total_harga;
+                            $subtotal += $transaksi->total_price;
                         @endphp
                     @endforeach
                 </tbody>
@@ -44,31 +46,31 @@
                     @endphp
                     <tr>
                         <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
-                        <td>Rp{{ number_format($subtotal, 2) }}</td>
+                        <td>Rp{{ number_format($subtotal, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Pajak (10%):</strong></td>
-                        <td>Rp{{ number_format($tax, 2) }}</td>
+                        <td>Rp{{ number_format($tax, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Total Harga Setelah Pajak:</strong></td>
-                        <td>Rp{{ number_format($total_harga_pajak, 2) }}</td>
+                        <td>Rp{{ number_format($total_harga_pajak, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Uang Dibayar:</strong></td>
-                        <td>Rp{{ number_format($transaksis->first()->uang_dibayar, 2) }}</td>
+                        <td>Rp{{ number_format($transaksis->first()->amount_paid, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Uang Kembalian:</strong></td>
-                        <td>Rp{{ number_format($transaksis->first()->uang_kembalian, 2) }}</td>
+                        <td>Rp{{ number_format($transaksis->first()->change_amount, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Metode Pembayaran:</strong></td>
-                        <td><strong>{{ $transaksis->first()->metode_pembayaran }}</strong></td>
+                        <td><strong>{{ $transaksis->first()->payment_method }}</strong></td>
                     </tr>
                     <tr>
                         <td colspan="4" class="text-end"><strong>Kasir:</strong></td>
-                        <td><strong>{{ $kasir }}</strong></td>
+                        <td><strong>{{ $transaksis->first()->user->full_name ?? 'Tidak Diketahui' }}</strong></td>
                     </tr>
                 </tfoot>
             </table>

@@ -207,7 +207,7 @@ class MenuController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return redirect()->route('menu.index')->with('success', 'Menu Item berhasil dihapus!');
+        return redirect()->route('menu.index')->with('success', 'Menu Item berhasil diupdate!');
     }
 
     /**
@@ -227,6 +227,6 @@ class MenuController extends Controller
 
         $menu->delete();
 
-        return redirect()->route('menu.index')->with('success', 'Menu item successfully deleted!');
+        return redirect()->route('menu.index')->with('success', 'Menu Item berhasil dihapus!');
     }
 }

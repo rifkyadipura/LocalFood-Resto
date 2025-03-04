@@ -23,24 +23,24 @@
             <form action="{{ route('menu.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="nama_menu" class="form-label">Nama Menu</label>
-                    <input type="text" name="nama_menu" id="nama_menu" class="form-control" placeholder="Masukkan nama menu" required>
+                    <label for="menu_name" class="form-label">Nama Menu</label>
+                    <input type="text" name="menu_name" id="menu_name" class="form-control" placeholder="Masukkan nama menu" required>
                 </div>
                 <div class="mb-3">
-                    <label for="harga" class="form-label">Harga</label>
-                    <input type="text" name="formatted_harga" id="formatted_harga" class="form-control" placeholder="Masukkan harga menu" required>
-                    <input type="hidden" name="harga" id="harga">
+                    <label for="formatted_price" class="form-label">Harga</label>
+                    <input type="text" name="formatted_price" id="formatted_price" class="form-control" placeholder="Masukkan harga menu" required>
+                    <input type="hidden" name="price" id="price">
                 </div>
                 <div class="mb-3">
-                    <label for="stok" class="form-label">Stok</label>
-                    <input type="number" name="stok" id="stok" class="form-control" placeholder="Masukkan stok menu" required>
+                    <label for="stock" class="form-label">Stok</label>
+                    <input type="number" name="stock" id="stock" class="form-control" placeholder="Masukkan stok menu" required>
                 </div>
                 <div class="mb-3">
-                    <label for="kategori" class="form-label">Kategori</label>
-                    <select name="kategory_id" id="kategori" class="form-select" required>
+                    <label for="category_id" class="form-label">Kategori</label>
+                    <select name="category_id" id="category_id" class="form-select" required>
                         <option value="" disabled selected>Pilih Kategori</option>
-                        @foreach ($kategories as $kategori)
-                            <option value="{{ $kategori->kategory_id }}">{{ $kategori->nama_kategory }}</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -52,12 +52,12 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="foto" class="form-label">Foto</label>
-                    <input type="file" name="foto" id="foto" class="form-control" required>
+                    <label for="image" class="form-label">Foto</label>
+                    <input type="file" name="image" id="image" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="deskripsi" class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3"></textarea>
+                    <label for="description" class="form-label">Deskripsi</label>
+                    <textarea name="description" id="description" class="form-control" rows="3"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Simpan
@@ -66,54 +66,46 @@
         </div>
     </div>
 </div>
-<script>
-    const formattedHarga = document.getElementById('formatted_harga');
-    const harga = document.getElementById('harga');
 
-    formattedHarga.addEventListener('input', function (e) {
-        // Ambil nilai dari input dan hapus format Rupiah
+<script>
+    const formattedPrice = document.getElementById('formatted_price');
+    const price = document.getElementById('price');
+
+    formattedPrice.addEventListener('input', function (e) {
         let value = this.value.replace(/\D/g, '');
-        // Ubah ke format Rupiah
         let formattedValue = new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
             minimumFractionDigits: 0
         }).format(value);
-        // Tampilkan nilai yang diformat
+
         this.value = formattedValue;
-        // Simpan nilai asli ke input tersembunyi
-        harga.value = value;
+        price.value = value;
     });
 
     // Validasi Status Berdasarkan Stok
-    const stokInput = document.getElementById('stok'); // Input stok
-    const statusSelect = document.getElementById('status'); // Dropdown status
+    const stockInput = document.getElementById('stock');
+    const statusSelect = document.getElementById('status');
 
-    // Event saat stok diubah
-    stokInput.addEventListener('input', function () {
-        const stokValue = parseInt(this.value); // Ambil nilai stok sebagai angka
-
-        if (stokValue > 0) {
-            // Jika stok lebih dari 0, ubah status ke "Tersedia" dan disable "Tidak Tersedia"
-            statusSelect.value = "1"; // Paksa ke "Tersedia"
-            statusSelect.querySelector('option[value="0"]').disabled = true; // Disable "Tidak Tersedia"
-            statusSelect.querySelector('option[value="1"]').disabled = false; // Aktifkan "Tersedia"
+    stockInput.addEventListener('input', function () {
+        const stockValue = parseInt(this.value);
+        if (stockValue > 0) {
+            statusSelect.value = "1";
+            statusSelect.querySelector('option[value="0"]').disabled = true;
+            statusSelect.querySelector('option[value="1"]').disabled = false;
         } else {
-            // Jika stok kosong (0), ubah status ke "Tidak Tersedia" dan disable "Tersedia"
-            statusSelect.value = "0"; // Paksa ke "Tidak Tersedia"
-            statusSelect.querySelector('option[value="1"]').disabled = true; // Disable "Tersedia"
-            statusSelect.querySelector('option[value="0"]').disabled = false; // Aktifkan "Tidak Tersedia"
+            statusSelect.value = "0";
+            statusSelect.querySelector('option[value="1"]').disabled = true;
+            statusSelect.querySelector('option[value="0"]').disabled = false;
         }
     });
 
-    // Validasi sebelum submit form
     document.querySelector('form').addEventListener('submit', function (e) {
-        const stokValue = parseInt(stokInput.value); // Ambil nilai stok
-        const statusValue = statusSelect.value; // Ambil nilai status
+        const stockValue = parseInt(stockInput.value);
+        const statusValue = statusSelect.value;
 
-        // Cek apakah stok 0 tetapi status "Tersedia" dipilih
-        if (stokValue == 0 && statusValue == "1") {
-            e.preventDefault(); // Batalkan submit form
+        if (stockValue == 0 && statusValue == "1") {
+            e.preventDefault();
             alert('Status "Tersedia" tidak boleh dipilih jika stok kosong.');
         }
     });
