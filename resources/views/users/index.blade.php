@@ -1,7 +1,7 @@
 @extends('layouts.appDashboard')
 
 @section('content')
-<div class="container mt-5">
+<div class="container">
     <div class="card shadow-lg rounded-lg border-0">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0">Daftar Pengguna</h4>
@@ -44,10 +44,10 @@
             ajax: {
                 url: "{{ route('users.data') }}",
                 error: function (xhr, error, thrown) {
-                    console.error("AJAX Error:", xhr.responseText); // Tetap tampilkan error jika ada masalah
+                    console.error("AJAX Error:", xhr.responseText);
                 }
             },
-            order: [[0, 'desc']], // Mengurutkan berdasarkan kolom pertama (DT_RowIndex) secara menurun
+            order: [[0, 'desc']],
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'full_name', name: 'full_name' },
