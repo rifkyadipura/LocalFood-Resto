@@ -271,7 +271,7 @@
             <span class="modal-close-payment" id="modalCloseQris" style="cursor: pointer;">&times;</span>
         </div>
         <div class="modal-body text-center">
-            <img src="{{ asset('QRIS/QRIS.jpg') }}" alt="QRIS" class="img-fluid mb-3">
+            <img src="{{ asset('QRIS/QRIS.jpg') }}" alt="QRIS" class="img-fluid mb-3" loading="lazy">
             <p>Total yang harus dibayar: <span id="totalBayarQris">Rp 0</span></p>
             <button id="confirmQrisPayment" class="btn btn-success w-100">Konfirmasi Pembayaran</button>
         </div>
@@ -291,7 +291,7 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}" loading="lazy">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $menu->menu_name }}</h5>
@@ -315,7 +315,7 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}" loading="lazy">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $menu->menu_name }}</h5>
@@ -339,7 +339,7 @@
         <div class="col">
             <div class="card h-100">
                 <div class="card-img-container">
-                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}">
+                    <img src="{{ $menu->image }}" class="card-img-top" alt="{{ $menu->menu_name }}" loading="lazy">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $menu->menu_name }}</h5>
