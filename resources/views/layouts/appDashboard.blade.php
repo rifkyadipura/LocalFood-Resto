@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -13,50 +13,6 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    {{-- <!-- Custom CSS -->
-    <style>
-        body,
-        #app {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        main {
-            flex-grow: 1;
-        }
-
-        .navbar-brand {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800;
-        }
-
-        .nav-link {
-            transition: color 0.3s, background-color 0.3s;
-        }
-
-        .nav-link:hover {
-            color: #6b21a8;
-            background-color: #f3e8ff;
-            border-radius: 5px;
-        }
-
-        .card-header {
-            background: linear-gradient(90deg, #34d399, #60a5fa);
-            border-bottom: none;
-        }
-
-        .card {
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .footer {
-            background-color: #f1f5f9;
-            border-top: 1px solid #d1d5db;
-        }
-    </style> --}}
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"> </script>
@@ -68,21 +24,17 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Stellar Admin</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/simple-line-icons/css/simple-line-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/flag-icon-css/css/flag-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}"> --}}
     <!-- endinject -->
     <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/daterangepicker/daterangepicker.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/chartist/chartist.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}" /> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/daterangepicker/daterangepicker.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendors/chartist/chartist.min.css') }}"> --}}
     <!-- End plugin css for this page -->
     <!-- inject:css -->
     <!-- endinject -->
@@ -219,6 +171,27 @@
                             </a>
                         </li>
                     @endif
+
+                    <!-- Tambahkan My Profile & Sign Out di bagian bawah sidebar (hanya tampil di mobile) -->
+                    <li class="nav-item d-block d-xl-none mt-3">
+                        <hr class="sidebar-divider"> <!-- Divider -->
+                    </li>
+                    <li class="nav-item d-block d-xl-none">
+                        <a class="nav-link" href="#">
+                            <i class="icon-user menu-icon me-2"></i>
+                            <span class="menu-title">My Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item d-block d-xl-none">
+                        <a class="nav-link" href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="icon-power menu-icon me-2"></i>
+                            <span class="menu-title">Sign Out</span>
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    </li>
                 </ul>
             </nav>
             <!-- partial -->
@@ -236,14 +209,14 @@
 
                 <!-- Footer -->
                 <footer class="footer">
-                    <div style="min-height: 40vh;"></div>
+                    <div style="min-height: 50vh;"></div>
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
                         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                            Copyright © 2024 Stellar. All rights reserved.
-                            <a href="#">Terms of use</a> <a href="#">Privacy Policy</a>
+                            Copyright © {{ date('Y') }} <strong>Localood</strong>. All rights reserved.
+                            <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
                         </span>
                         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-                            Hand-crafted & made with <i class="icon-heart text-danger"></i>
+                            Hand-crafted & made with <i class="icon-heart text-danger"></i> by <strong>Riky Najra Adipura</strong>
                         </span>
                     </div>
                 </footer>
@@ -259,22 +232,22 @@
     {{-- <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script> --}}
     <!-- endinject -->
     <!-- Plugin js for this page -->
-    <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script>
+    {{-- <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script> --}}
     {{-- <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script> --}}
     {{-- <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script> --}}
-    <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/moment/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/daterangepicker/daterangepicker.js') }}"></script>
+    {{-- <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/vendors/moment/moment.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/vendors/daterangepicker/daterangepicker.js') }}"></script> --}}
     {{-- <script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script> --}}
-    <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/jquery.cookie.js') }}"></script>
+    {{-- <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/jquery.cookie.js') }}"></script> --}}
     <!-- End plugin js for this page -->
     <!-- inject:js -->
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
-    <script src="{{ asset('assets/js/settings.js') }}"></script>
-    <script src="{{ asset('assets/js/todolist.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/settings.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/todolist.js') }}"></script> --}}
     <!-- endinject -->
     <!-- Custom js for this page -->
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
